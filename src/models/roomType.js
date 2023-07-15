@@ -3,7 +3,7 @@
     Model
   } = require('sequelize');
   module.exports = (sequelize, DataTypes) => {
-    class RoonType extends Model {
+    class RoomType extends Model {
       /**
        * Helper method for defining associations.
        * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@
         // define association here
       }
     }
-    RoonType.init({
+    RoomType.init({
         code: DataTypes.STRING,
         name: DataTypes.STRING,
         description: DataTypes.TEXT,
@@ -25,7 +25,7 @@
         priceBegin: DataTypes.DECIMAL,
     }, {
       sequelize,
-      modelName: 'RoonType',
+      modelName: 'RoomType',
     });
-    return RoonType;
+    return RoomType;
   };
