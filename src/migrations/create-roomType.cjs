@@ -9,47 +9,45 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      code: {
+      code:
+      {
         type: Sequelize.STRING,
-        unique:true,
-        allowNull: false        
       },
-      name: {
+      name:
+      {
         type: Sequelize.STRING,
-        allowNull: false        
       },
-      description: {
+      description:
+      {
         type: Sequelize.TEXT,
-        allowNull: true        
       },
-      area: {
+      capacity:
+      {
         type: Sequelize.INTEGER,
-        defaultValue: 0,
+        defaultValue: 2,
       },
-      capacity: {
+      area:
+      {
         type: Sequelize.INTEGER,
-        allowNull: false        
+        defaultValue: 0
       },
-      employee: {
-        type: Sequelize.INTEGER,
-        allowNull: false        
-      },
-      image: {
-        type: Sequelize.INTEGER,
-        allowNull: false        
-      },
-      employee: {
-        type: Sequelize.INTEGER,
-        allowNull: false        
-      },
-      priceBegin: {
-        type: Sequelize.priceBegin,
-        allowNull: false        
-      },
-      status: {
+      status:
+      {
         type: Sequelize.STRING,
-        defaultValue: 'published',
-        allowNull: true        
+        defaultValue: 'published'
+      },
+      image:
+      {
+        type: Sequelize.INTEGER,
+      },
+      employee:
+      {
+        type: Sequelize.INTEGER,
+      },
+      priceBegin:
+      {
+        type: Sequelize.DECIMAL,
+        defaultValue: 0,
       },
       createdAt: {
         allowNull: false,
@@ -59,7 +57,8 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    });
+    },
+    );
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('RoomTypes');

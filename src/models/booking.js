@@ -19,9 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     checkInDate: DataTypes.DATE,
     checkOutDate: DataTypes.DATE,
     status: DataTypes.STRING,
-    total: DataTypes.DECIMAL( 10, 2 ),
-    gender: DataTypes.STRING,
-    dateOfBirth: DataTypes.DATE,
+    total: DataTypes.DECIMAL,
     status: DataTypes.STRING,
     employee: DataTypes.INTEGER
   }, {

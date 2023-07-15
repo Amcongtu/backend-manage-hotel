@@ -32,7 +32,7 @@ module.exports = {
       },
       roomType: {
         type: Sequelize.INTEGER,
-        allowNull: false        
+        allowNull: false,
       },
       image: {
         type: Sequelize.INTEGER,

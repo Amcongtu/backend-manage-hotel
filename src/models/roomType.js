@@ -11,6 +11,7 @@
        */
       static associate(models) {
         // define association here
+
       }
     }
     RoomType.init({
