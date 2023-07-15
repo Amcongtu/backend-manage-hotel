@@ -16,9 +16,9 @@ module.exports = (sequelize, DataTypes) => {
   Room.init({
         code: DataTypes.STRING,
         name: DataTypes.STRING,
-        description: DataTypes.STRING,
+        description: DataTypes.TEXT,
         price: DataTypes.DECIMAL,
-        capacity: DataTypes.STRING,
+        capacity: DataTypes.INTEGER,
         roomType: DataTypes.INTEGER,
         image: DataTypes.INTEGER,
         status: DataTypes.STRING,

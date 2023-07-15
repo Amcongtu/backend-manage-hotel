@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
   ImageEmployee.init({
     value: DataTypes.TEXT,
     employee: DataTypes.INTEGER,
-    employee: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'ImageEmployee',
