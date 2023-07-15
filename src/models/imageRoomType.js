@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   ImageRoomType.init({
     value: DataTypes.TEXT,
-    employee: DataTypes.INTEGER,
     roomType: DataTypes.INTEGER,
   }, {
     sequelize,
