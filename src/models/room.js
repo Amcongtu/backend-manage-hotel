@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
     }
   }
   Room.init({
@@ -19,11 +20,19 @@ module.exports = (sequelize, DataTypes) => {
         description: DataTypes.TEXT,
         price: DataTypes.DECIMAL,
         capacity: DataTypes.INTEGER,
-        roomType: DataTypes.INTEGER,
+        roomType: 
+        {
+            type: DataTypes.INTEGER,
+            references:
+            {
+                model: 'RoomType',
+                key: 'id',
+            }
+        },
         image: DataTypes.INTEGER,
         status: DataTypes.STRING,
         facility: DataTypes.INTEGER,
-        employee: DataTypes.INTEGER
+        employee: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'Room',

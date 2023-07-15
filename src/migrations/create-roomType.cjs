@@ -2,48 +2,52 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Bookings', {
+    await queryInterface.createTable('RoomTypes', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      customer: 
-      {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      room: 
-      {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      checkInDate: 
-      {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      checkOutDate: 
-      {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      status: 
+      code:
       {
         type: Sequelize.STRING,
-        allowNull: false,
       },
-      total: 
+      name:
       {
-        type: Sequelize.DECIMAL,
-        allowNull: false,
+        type: Sequelize.STRING,
       },
-      employee: 
+      description:
+      {
+        type: Sequelize.TEXT,
+      },
+      capacity:
       {
         type: Sequelize.INTEGER,
-        defaultValue: '',
-        allowNull: true,
+        defaultValue: 2,
+      },
+      area:
+      {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
+      status:
+      {
+        type: Sequelize.STRING,
+        defaultValue: 'published'
+      },
+      image:
+      {
+        type: Sequelize.INTEGER,
+      },
+      employee:
+      {
+        type: Sequelize.INTEGER,
+      },
+      priceBegin:
+      {
+        type: Sequelize.DECIMAL,
+        defaultValue: 0,
       },
       createdAt: {
         allowNull: false,
@@ -53,9 +57,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    });
+    },
+    );
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Bookings');
+    await queryInterface.dropTable('RoomTypes');
   }
 };
