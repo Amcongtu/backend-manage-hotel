@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   ImageCustomer.init({
     value: DataTypes.TEXT,
-    employee: DataTypes.INTEGER,
     customer: DataTypes.INTEGER,
   }, {
     sequelize,

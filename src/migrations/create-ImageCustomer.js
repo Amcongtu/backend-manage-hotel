@@ -13,7 +13,7 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false        
       },
-      employee: {
+      customer: {
         type: Sequelize.INTEGER,
         allowNull: false        
       },
