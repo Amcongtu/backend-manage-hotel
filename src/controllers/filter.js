@@ -157,7 +157,6 @@ export const filterRooms = async (req, res) => {
                         {
                             model: db.ImageRoomType,
                             attributes: ['value']
-        
                         }
                     ]
                 });
