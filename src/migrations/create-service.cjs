@@ -9,6 +9,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      code:
+      {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
       name:
       {
         type: Sequelize.STRING,
@@ -25,6 +31,12 @@ module.exports = {
         type: Sequelize.DECIMAL,
         defaultValue: 0,
       },
+      status:
+      {
+        type: Sequelize.STRING,
+        defaultValue: "draft",  
+      },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

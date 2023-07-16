@@ -11,10 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      ImageRoom.belongsTo(models.Room, { foreignKey: 'room' });
+
     }
   }
   ImageRoom.init({
-    value: DataTypes.TEXT,
+    value: DataTypes.STRING,
+    valueId: DataTypes.STRING,
     room: DataTypes.INTEGER,
   }, {
     sequelize,

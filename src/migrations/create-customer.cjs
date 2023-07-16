@@ -39,9 +39,19 @@ module.exports = {
         defaultValue: '',
         allowNull: true        
       },
+      image: {
+        type: Sequelize.STRING,
+        defaultValue: '',
+        allowNull: true        
+      },
+      imageId: {
+        type: Sequelize.STRING,
+        defaultValue: '',
+        allowNull: true        
+      },
       gender: {
         type: Sequelize.STRING,
-        defaultValue: 'male',
+        defaultValue: 'none',
         allowNull: true        
       },
       dateOfBirth: {

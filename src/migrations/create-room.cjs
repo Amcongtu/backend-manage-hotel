@@ -34,22 +34,14 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: { model: 'roomtypes', key: 'id' }
       },
-      image: {
-        type: Sequelize.INTEGER,
-        allowNull: false        
-      },
       employee: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: { model: 'employees', key: 'id' }        
       },
-      facility: {
-        type: Sequelize.INTEGER,
-        allowNull: false        
-      },
       status: {
         type: Sequelize.STRING,
-        defaultValue: 'published',
+        defaultValue: 'draft',
         allowNull: true        
       },
       createdAt: {

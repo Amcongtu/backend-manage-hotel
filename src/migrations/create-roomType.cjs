@@ -12,10 +12,13 @@ module.exports = {
       code:
       {
         type: Sequelize.STRING,
+        unique: true,
+        allowNull: false,
       },
       name:
       {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       description:
       {
@@ -36,16 +39,11 @@ module.exports = {
         type: Sequelize.STRING,
         defaultValue: 'published'
       },
-      image:
-      {
-        type: Sequelize.INTEGER,
-      },
       employee:
       {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: { model: 'employees', key: 'id' }
-
       },
       priceBegin:
       {
