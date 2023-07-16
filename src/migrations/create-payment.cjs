@@ -13,6 +13,7 @@ module.exports = {
       {
         type: Sequelize.INTEGER,
         allowNull: false,
+        references: { model: 'bookings', key: 'id' }
       },
       paymentAmount:
       {
@@ -28,6 +29,7 @@ module.exports = {
       {
         type: Sequelize.INTEGER,
         allowNull: true,
+        references: { model: 'employees', key: 'id' }
       },
       paymentMethod:
       {

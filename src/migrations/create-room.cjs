@@ -32,7 +32,7 @@ module.exports = {
       },
       roomType: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        references: { model: 'roomtypes', key: 'id' }
       },
       image: {
         type: Sequelize.INTEGER,
@@ -40,7 +40,8 @@ module.exports = {
       },
       employee: {
         type: Sequelize.INTEGER,
-        allowNull: false        
+        allowNull: false,
+        references: { model: 'employees', key: 'id' }        
       },
       facility: {
         type: Sequelize.INTEGER,
@@ -61,6 +62,7 @@ module.exports = {
       }
     });
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Rooms');
   }

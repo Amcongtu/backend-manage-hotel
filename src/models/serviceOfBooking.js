@@ -15,7 +15,6 @@
     }
     ServiceOfBooking.init({
         booking: DataTypes.INTEGER,
-        employee: DataTypes.INTEGER,
         service: DataTypes.INTEGER
     }, {
       sequelize,
