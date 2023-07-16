@@ -16,7 +16,9 @@ module.exports = {
       roomType:
       {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: { model: 'roomtypes', key: 'id' }
+        
       },
       createdAt: {
         allowNull: false,

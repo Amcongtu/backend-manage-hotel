@@ -12,14 +12,16 @@ module.exports = {
       booking:
       {
         type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: 'bookings', key: 'id' }
+
       },
-      employee:
-      {
-        type: Sequelize.INTEGER,
-      },
+
       service:
       {
         type: Sequelize.INTEGER,
+        references: { model: 'services', key: 'id' }
+
       },
       createdAt: {
         allowNull: false,

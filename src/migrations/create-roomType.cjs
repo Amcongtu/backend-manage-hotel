@@ -43,6 +43,9 @@ module.exports = {
       employee:
       {
         type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: 'employees', key: 'id' }
+
       },
       priceBegin:
       {

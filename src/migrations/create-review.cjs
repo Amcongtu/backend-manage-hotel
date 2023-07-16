@@ -12,6 +12,8 @@ module.exports = {
       customer:
       {
         type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: 'customers', key: 'id' }
       },
       rating:
       {

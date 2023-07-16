@@ -17,6 +17,7 @@ module.exports = {
       {
         type:  Sequelize.INTEGER,
         allowNull: false,
+        references: { model: 'rooms', key: 'id' }
       },
       name:
       {
@@ -31,6 +32,8 @@ module.exports = {
       {
         type:  Sequelize.INTEGER,
         allowNull: false,
+        references: { model: 'employees', key: 'id' }
+
       },
       status:
       {

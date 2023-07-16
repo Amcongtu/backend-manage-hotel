@@ -36,12 +36,9 @@ Object.keys(db).forEach(modelName => {
     db[modelName].associate(db);
   }
 });
-const Room = sequelize.import('./room');
-const RoomType = sequelize.import('./roomType');
 
 // Tạo mối quan hệ hasMany và belongsTo
-RoomType.hasMany(Room, { foreignKey: 'roomType', as: 'roomTypeData' });
-Room.belongsTo(RoomType, { foreignKey: 'roomType', as: 'roomTypeData' });
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 module.exports = db;
