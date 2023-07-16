@@ -11,7 +11,6 @@
        */
       static associate(models) {
         // define association here
-
       }
     }
     RoomType.init({
@@ -28,5 +27,6 @@
       sequelize,
       modelName: 'RoomType',
     });
+    
     return RoomType;
   };

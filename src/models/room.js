@@ -20,15 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         description: DataTypes.TEXT,
         price: DataTypes.DECIMAL,
         capacity: DataTypes.INTEGER,
-        roomType: 
-        {
-            type: DataTypes.INTEGER,
-            references:
-            {
-                model: 'RoomType',
-                key: 'id',
-            }
-        },
+        roomType: DataTypes.INTEGER,
         image: DataTypes.INTEGER,
         status: DataTypes.STRING,
         facility: DataTypes.INTEGER,
@@ -37,5 +29,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Room',
   });
+  
   return Room;
 };
