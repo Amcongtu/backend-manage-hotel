@@ -17,7 +17,6 @@ export const registerCustomer = async (req, res, next) =>{
         dateOfBirth,
     } = req.body
 
-    console.log(req.body)
 
     if (!username || !password || !name || !phone || !email)
     {
