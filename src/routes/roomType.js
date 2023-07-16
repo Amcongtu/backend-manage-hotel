@@ -1,10 +1,10 @@
 import express from "express";
-import {getAllRooms, addRoomType, getRoomAndRelatedData} from "../controllers/roomType.js"
+import { addRoomType, getRoomAndRelatedData, getAllRoomTypes} from "../controllers/roomType.js"
 
 
 const router = express.Router()
 
-// router.get("/", getAllRooms )
+router.get("/", getAllRoomTypes )
 
 router.get("/:code", getRoomAndRelatedData)
 
