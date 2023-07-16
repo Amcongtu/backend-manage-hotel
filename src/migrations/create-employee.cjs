@@ -30,6 +30,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false        
       },
+      department: {
+        type: Sequelize.STRING,
+        allowNull: true        
+      },
       salary: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
