@@ -94,7 +94,7 @@ export const filterRooms = async (req, res) => {
         if (Array.isArray(child)) {
             child.forEach((childObj) => {
                 if (childObj.old >= 12) {
-                    totalAdults += childObj.number;
+                    totalAdults += 1;
                 }
             });
         }
