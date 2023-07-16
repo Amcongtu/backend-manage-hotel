@@ -11,7 +11,11 @@
        */
       static associate(models) {
         // define association here
-        RoomType.hasMany(models.ImageRoomType, { foreignKey: 'roomType' });
+        RoomType.hasMany(models.ImageRoomType, { foreignKey: 'roomType'});
+
+
+        RoomType.hasMany(models.Room, { foreignKey: 'roomType' });
+        
       }
     }
     RoomType.init({
