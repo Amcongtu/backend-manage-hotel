@@ -33,7 +33,7 @@ module.exports = {
       },
       status:
       {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.STRING,
         defaultValue: "draft",  
       },
 

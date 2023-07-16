@@ -106,3 +106,27 @@ export const getRoomAndRelatedData = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy thông tin phòng và dữ liệu liên quan", false, []));
     }
 };
+
+
+export const getAllRoomTypes = async (req, res) => {
+    const { status } = req.query;
+    
+
+    try {
+        let roomTypes;
+    
+        if (status) {
+            roomTypes = await db.RoomType.findAll({ where: { status } });
+        } 
+        
+        else {
+            roomTypes = await db.RoomType.findAll();
+        }
+    
+        return res.status(200).json(responseHelper(200, "Danh sách loại phòng", true, roomTypes));
+    } catch (error) {
+        console.log(error);
+    
+        return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách loại phòng", false, []));
+    }
+};

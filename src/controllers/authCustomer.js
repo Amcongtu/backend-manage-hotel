@@ -88,7 +88,18 @@ export const loginCustomer = async (req, res, next) => {
   
       return res
         .status(200)
-        .json(responseHelper(200, "Đăng nhập thành công", true, [token]));
+        .json(responseHelper(200, "Đăng nhập thành công", true, {
+            token: token,
+            username: Customer.username,
+            name: Customer.name,
+            email:  Customer.email,
+            imageId: Customer.imageId,
+            phone: Customer.phone,
+            address: Customer.address,
+            gender: Customer.gender,
+            image: Customer.image,
+            dateOfBirth: Customer.dateOfBirth,
+        }));
     } catch (error) {
       return res
         .status(500)
