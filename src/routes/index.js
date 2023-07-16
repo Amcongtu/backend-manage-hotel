@@ -1,9 +1,10 @@
-import authRouter from "./auth.js"
+import authEmployeeRouter from "./authEmployee.js"
+import authCustomerRouter from "./authCustomer.js"
 
 const initRoutes =  (app) => {
-    app.use('/api/employee', authRouter)
 
-
+    app.use('/api/employee', authEmployeeRouter)
+    app.use('/api/customer', authCustomerRouter)
 
 
     

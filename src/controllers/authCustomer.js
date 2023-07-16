@@ -5,23 +5,21 @@ import {v4} from "uuid"
 import jwt from "jsonwebtoken"
 
 
-export const registerEmployee = async (req, res, next) =>{
+export const registerCustomer = async (req, res, next) =>{
     
     const {
         username,
         password,
         name,
-        position,
-        salary,
         email,
-        address,
         phone,
-        hireDate,
-        status,
-        department
+        gender,
+        dateOfBirth,
     } = req.body
 
-    if (!username || !password || !name || !position || !email)
+    console.log(req.body)
+
+    if (!username || !password || !name || !phone || !email)
     {
         return res.status(400).json(responseHelper(400, "Dữ liệu nhập vào bị thiếu", true, []))
     }
@@ -29,21 +27,16 @@ export const registerEmployee = async (req, res, next) =>{
     const hashPassword = await bcrypt.hash(password, bcrypt.genSaltSync(12)) 
 
     try {
-        const response = await db.Employee.findOrCreate({
+        const response = await db.Customer.findOrCreate({
             where: {username},
             defaults: {
                 username,
-                department,
                 password: hashPassword,
-                code: v4(),
                 name,
-                position,
-                salary,
                 email,
-                address,
                 phone,
-                hireDate,
-                status
+                gender,
+                dateOfBirth,
             }
         })   
     
@@ -62,7 +55,7 @@ export const registerEmployee = async (req, res, next) =>{
 }
 
 
-export const loginEmployee = async (req, res, next) => {
+export const loginCustomer = async (req, res, next) => {
     const { username, password } = req.body;
   
     if (!username || !password) {
@@ -72,15 +65,15 @@ export const loginEmployee = async (req, res, next) => {
     }
   
     try {
-      const employee = await db.Employee.findOne({ where: { username } });
+      const Customer = await db.Customer.findOne({ where: { username } });
   
-      if (!employee) {
+      if (!Customer) {
         return res
           .status(401)
           .json(responseHelper(401, "Tài khoản không tồn tại", false, []));
       }
   
-      const isPasswordMatch = await bcrypt.compare(password, employee.password);
+      const isPasswordMatch = await bcrypt.compare(password, Customer.password);
   
       if (!isPasswordMatch) {
         return res
@@ -89,7 +82,7 @@ export const loginEmployee = async (req, res, next) => {
       }
   
       const token = jwt.sign(
-        { code: employee.code, username: employee.username, position: employee.position },
+        { code: Customer.code, username: Customer.username, position: Customer.position },
         process.env.JWT_SECRET,
         { expiresIn: "2d" }
       );
