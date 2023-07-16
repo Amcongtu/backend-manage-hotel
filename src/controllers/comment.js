@@ -2,7 +2,7 @@ import db from "../models"
 import { responseHelper } from "../helpers/response"
 
 export const createReview = async (req, res) => {
-    const { customer, rating, comment } = req.body;
+    let { customer, rating, comment } = req.body;
 
     // Check for empty fields
     if (!customer || !rating || !comment) {

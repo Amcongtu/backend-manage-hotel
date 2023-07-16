@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken"
 
 export const registerEmployee = async (req, res, next) =>{
     
-    const {
+    var {
         username,
         password,
         name,

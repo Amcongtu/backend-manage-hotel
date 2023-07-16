@@ -14,9 +14,11 @@
       }
     }
     Service.init({
+        code: DataTypes.STRING,
         name: DataTypes.STRING,
         employee: DataTypes.INTEGER,
-        amount: DataTypes.DECIMAL
+        amount: DataTypes.DECIMAL,
+        status: DataTypes.STRING
     }, {
       sequelize,
       modelName: 'Service',

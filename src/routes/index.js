@@ -4,6 +4,9 @@ import roomRouter from "./room.js"
 import roomTypeRouter from "./roomType.js"
 import commentRouter from "./comment.js"
 import filterRouter from "./filter.js"
+import bookingRouter from "./booking.js"
+import facilityRouter from "./facility.js"
+
 const initRoutes =  (app) => {
 
     app.use('/api/employee', authEmployeeRouter)
@@ -12,6 +15,8 @@ const initRoutes =  (app) => {
     app.use('/api/room-type', roomTypeRouter)
     app.use('/api/comment', commentRouter)
     app.use('/api/filter', filterRouter)
+    app.use('/api/booking', bookingRouter)
+    app.use('/api/facility', facilityRouter)
 
 
 
