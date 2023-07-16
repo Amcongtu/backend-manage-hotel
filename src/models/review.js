@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
     customer: DataTypes.INTEGER,
     rating: DataTypes.DECIMAL,
     comment: DataTypes.TEXT,
-    paymentMethod: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Review',

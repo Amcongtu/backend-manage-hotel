@@ -74,13 +74,13 @@ export const verifyTokenClient = (req,res,next)=>{
 
 }
 export const verifyClient = (req,res,next)=>{
-    verifyTokenClient(req,res ,()=>{
+    verifyToken(req,res ,()=>{
 
         if(req.user){
             next();
         }else{
             
-            return res.status(403).json({message:"You are not authorized!"});
+            return res.status(403).json({message:"Bạn không có quyền làm việc này!"});
         }
     })
 }
