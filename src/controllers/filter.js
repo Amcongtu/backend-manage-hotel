@@ -134,7 +134,7 @@ export const filterRooms = async (req, res) => {
         const rooms = await db.Room.findAll({
             where: {
                 id: { [Op.notIn]: bookedRoomIds },
-                status: 'available',
+                status: 'published',
                 capacity: { [Op.gte]: totalAdults }
             },
             include: [
