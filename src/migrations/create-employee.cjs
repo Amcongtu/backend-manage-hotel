@@ -26,6 +26,16 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false        
       },
+      image: {
+        type: Sequelize.STRING,
+        defaultValue: '',
+        allowNull: true        
+      },
+      imageId: {
+        type: Sequelize.STRING,
+        defaultValue: '',
+        allowNull: true        
+      },
       position: {
         type: Sequelize.STRING,
         allowNull: false        

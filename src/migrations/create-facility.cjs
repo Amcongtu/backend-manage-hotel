@@ -2,21 +2,36 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('ImageEmployees', {
+    await queryInterface.createTable('Facilitys', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      value: {
-        type: Sequelize.TEXT,
-        allowNull: false        
+      code:
+      {
+        type:  Sequelize.STRING,
       },
-      employee: {
-        type: Sequelize.INTEGER,
+      name:
+      {
+        type:  Sequelize.STRING,
         allowNull: false,
-        references: { model: 'employees', key: 'id' }        
+      },
+      description:
+      {
+        type:  Sequelize.TEXT,
+      },
+      employee:
+      {
+        type:  Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: 'employees', key: 'id' }
+      },
+      status:
+      {
+        type:  Sequelize.STRING,
+        defaultValue: "draft"
       },
       createdAt: {
         allowNull: false,
@@ -29,6 +44,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('ImageEmployees');
+    await queryInterface.dropTable('Facilitys');
   }
 };

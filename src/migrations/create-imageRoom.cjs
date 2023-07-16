@@ -12,6 +12,12 @@ module.exports = {
       value:
       {
         type: Sequelize.TEXT,
+        allowNull: false,
+      },
+
+      valueId: {
+        allowNull: false,
+        type: Sequelize.TEXT,
       },
       room:
       {

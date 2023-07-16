@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   ImageRoom.init({
-    value: DataTypes.TEXT,
+    value: DataTypes.STRING,
+    valueId: DataTypes.STRING,
     room: DataTypes.INTEGER,
   }, {
     sequelize,

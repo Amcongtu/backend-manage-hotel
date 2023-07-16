@@ -20,18 +20,8 @@ module.exports = (sequelize, DataTypes) => {
         description: DataTypes.TEXT,
         price: DataTypes.DECIMAL,
         capacity: DataTypes.INTEGER,
-        roomType: 
-        {
-            type: DataTypes.INTEGER,
-            references:
-            {
-                model: 'RoomType',
-                key: 'id',
-            }
-        },
-        image: DataTypes.INTEGER,
+        roomType: DataTypes.INTEGER,
         status: DataTypes.STRING,
-        facility: DataTypes.INTEGER,
         employee: DataTypes.INTEGER,
   }, {
     sequelize,
