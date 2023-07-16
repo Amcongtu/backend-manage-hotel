@@ -55,3 +55,54 @@ export const addRoomType = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Thêm loại phòng không thành công", false, []));
     }
 };
+
+export const getRoomAndRelatedData = async (req, res) => {
+    const { code } = req.params;
+
+    try {
+        const roomType = await db.RoomType.findOne({
+            where: { code },
+            attributes: ['id', 'code', 'name', 'description', 'capacity', 'area', 'status', 'employee', 'priceBegin'],
+            include: [
+                {
+                    model: db.ImageRoomType,
+                    attributes: ['value']
+
+                }
+            ]
+        });
+
+        if (!roomType) {
+            return res.status(404).json(responseHelper(404, "Không tìm thấy loại phòng", false, {}));
+        }
+
+        const relatedRooms = await db.Room.findAll({
+            where: { roomType: roomType.id, status: "published" }, // Sửa thành where: { roomType: roomType.id }
+            attributes: ['code', 'name', 'description', 'price', 'capacity'],
+            include: [
+                {
+                    model: db.ImageRoom,
+                    attributes: ['value']
+                }
+            ]
+        });
+
+        const result = {
+            id: roomType.id,
+            code: roomType.code,
+            name: roomType.name,
+            description: roomType.description,
+            capacity: roomType.capacity,
+            area: roomType.area,
+            status: roomType.status,
+            employee: roomType.employee,
+            priceBegin: roomType.priceBegin,
+            image: roomType.ImageRoomTypes,
+            rooms: relatedRooms
+        };
+
+        return res.status(200).json(responseHelper(200, "Lấy thông tin phòng và dữ liệu liên quan thành công", true, result));
+    } catch (error) {
+        return res.status(500).json(responseHelper(500, "Lỗi khi lấy thông tin phòng và dữ liệu liên quan", false, []));
+    }
+};
