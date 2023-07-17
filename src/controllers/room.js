@@ -86,3 +86,41 @@ export const createRoom = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Thêm phòng không thành công", false, []));
     }
 };
+
+export const getRoomById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const room = await db.Room.findOne({
+            where: { id },
+            include: [
+                {
+                    model: db.ImageRoom,
+                    attributes: ['value'],
+                },
+                {
+                    model: db.RoomType,
+                    include: [
+                        {
+                            model: db.Employee,
+                            attributes: ['id', 'name', 'email'],
+                        },
+                        {
+                            model: db.ImageRoomType,
+                            attributes: ['value'],
+                        },
+                    ],
+                },
+            ],
+        });
+
+        if (!room) {
+            return res.status(404).json(responseHelper(404, "Phòng không tồn tại", false, {}));
+        }
+
+        return res.status(200).json(responseHelper(200, "Lấy chi tiết phòng thành công", true, room));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(responseHelper(500, "Lỗi khi lấy chi tiết phòng", false, {}));
+    }
+};

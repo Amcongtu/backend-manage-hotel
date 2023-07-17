@@ -38,6 +38,7 @@ export const createService = async (req, res) => {
 
 export const getServices = async (req, res) => {
     const { status } = req.query;
+    console.log(123)
     let whereCondition = {};
 
     if (status) {
