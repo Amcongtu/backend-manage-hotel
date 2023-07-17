@@ -73,7 +73,14 @@ export const updateReview = async (req, res) => {
 
 export const getAllReviews = async (req, res) => {
     try {
-        const reviews = await db.Review.findAll();
+        const reviews = await db.Review.findAll({
+            include: [
+                {
+                    model: db.Customer,
+                    attributes: ["image","name"]
+                }
+            ]
+        });
 
         return res.status(200).json(responseHelper(200, "Lấy danh sách đánh giá thành công", true, reviews));
     } catch (error) {

@@ -11,12 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Customer.hasMany(models.Review, { foreignKey: 'customer'});
+
     }
   }
   Customer.init({
     username: DataTypes.STRING,
-    password: DataTypes.STRING,
     name: DataTypes.STRING,
+    password: DataTypes.STRING,
     email: DataTypes.STRING,
     imageId: DataTypes.STRING,
     phone: DataTypes.STRING,

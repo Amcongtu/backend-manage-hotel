@@ -35,3 +35,23 @@ export const createService = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Thêm dịch vụ không thành công", false, []));
     }
 };
+
+export const getServices = async (req, res) => {
+    const { status } = req.query;
+    let whereCondition = {};
+
+    if (status) {
+        whereCondition = { status };
+    }
+
+    try {
+        const services = await db.Service.findAll({
+            where: whereCondition
+        });
+
+        return res.status(200).json(responseHelper(200, 'Lấy danh sách dịch vụ thành công', true, services));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(responseHelper(500, 'Lỗi khi lấy danh sách dịch vụ', false, {}));
+    }
+};
