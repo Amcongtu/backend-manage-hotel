@@ -106,7 +106,6 @@ export const getRoomAndRelatedData = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy thông tin phòng và dữ liệu liên quan", false, []));
     }
 };
-
 export const getAllRoomTypes = async (req, res) => {
     const { status } = req.query;
 
@@ -121,6 +120,10 @@ export const getAllRoomTypes = async (req, res) => {
                         model: db.ImageRoomType,
                         attributes: ['value'],
                     },
+                    {
+                        model: db.Employee,
+                        attributes: ['id', 'name', 'email'],
+                    },
                 ],
             });
         } else {
@@ -129,6 +132,10 @@ export const getAllRoomTypes = async (req, res) => {
                     {
                         model: db.ImageRoomType,
                         attributes: ['value'],
+                    },
+                    {
+                        model: db.Employee,
+                        attributes: ['id', 'name', 'email'],
                     },
                 ],
             });
@@ -141,3 +148,4 @@ export const getAllRoomTypes = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách loại phòng", false, []));
     }
 };
+

@@ -14,6 +14,7 @@
 
         RoomType.hasMany(models.ImageRoomType, { foreignKey: 'roomType'});
 
+        RoomType.belongsTo(models.Employee, { foreignKey: 'employee'});
 
         RoomType.hasMany(models.Room, { foreignKey: 'roomType' });
         
