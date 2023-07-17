@@ -1,7 +1,7 @@
 import db from "../models";
 import { Op } from "sequelize";
 import { responseHelper } from "../helpers/response";
-
+import moment from "moment"
 // export const filterRooms = async (req, res) => {
 //     let { startDate, endDate, adult, child } = req.query;
 
@@ -11,7 +11,7 @@ import { responseHelper } from "../helpers/response";
 //     }
 //     if (!endDate) {
 //         const nextDay = new Date(startDate);
-//         nextDay.setDate(nextDay.getDate() + 1);
+//         nextDay.smoment
 //         endDate = nextDay;
 //     }
 
