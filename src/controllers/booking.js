@@ -278,3 +278,26 @@ export const createBooking = async (req, res) => {
             .json(responseHelper(500, "Đặt phòng không thành công", false, []));
     }
 };
+
+
+export const getBookingList = async (req, res) => {
+    try {
+        const bookings = await db.Booking.findAll({
+            include: [
+                {
+                    model: db.Customer,
+                    attributes: ['id', 'name', 'email', 'phone'],
+                },
+                {
+                    model: db.Room,
+                    attributes: ['id', 'code'],
+                },
+            ],
+        });
+
+        return res.status(200).json(responseHelper(200, 'Danh sách booking', true, bookings));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(responseHelper(500, 'Lỗi khi lấy danh sách booking', false, {}));
+    }
+};
