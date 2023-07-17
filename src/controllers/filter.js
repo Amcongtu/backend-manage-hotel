@@ -173,3 +173,61 @@ export const filterRooms = async (req, res) => {
         return res.status(500).json(responseHelper(500, 'Lỗi khi lọc danh sách phòng', false, {}));
     }
 };
+
+export const checkAvailability = async (req, res) => {
+    const { startDate, endDate, id } = req.query;
+
+    // Kiểm tra giá trị bắt buộc
+    if (!startDate || !endDate || !id) {
+        return res.status(400).json(responseHelper(400, 'Ngày bắt đầu, ngày kết thúc và ID phòng là bắt buộc', false, {}));
+    }
+
+    // Kiểm tra định dạng ngày
+    const isValidStartDate = moment(startDate, 'YYYY-MM-DD', true).isValid();
+    const isValidEndDate = moment(endDate, 'YYYY-MM-DD', true).isValid();
+
+    if (!isValidStartDate || !isValidEndDate) {
+        return res.status(400).json(responseHelper(400, 'Ngày bắt đầu hoặc ngày kết thúc không hợp lệ', false, {}));
+    }
+
+    try {
+        const room = await db.Room.findOne({
+            where: { id: id },
+            include: [{
+                model: db.Booking,
+                where: {
+                    [Op.or]: [
+                        {
+                            checkInDate: {
+                                [Op.between]: [startDate, endDate]
+                            }
+                        },
+                        {
+                            checkOutDate: {
+                                [Op.between]: [startDate, endDate]
+                            }
+                        },
+                        {
+                            checkInDate: {
+                                [Op.lte]: startDate
+                            },
+                            checkOutDate: {
+                                [Op.gte]: endDate
+                            }
+                        }
+                    ]
+                },
+                attributes: []
+            }]
+        });
+
+        if (!room) {
+            return res.status(200).json(responseHelper(200, 'Phòng có sẵn', false, true));
+        }
+
+        return res.status(200).json(responseHelper(200, 'Phòng không có sẵn', true, false));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(responseHelper(500, 'Lỗi khi kiểm tra tình trạng phòng', false, {}));
+    }
+};
