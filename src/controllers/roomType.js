@@ -149,3 +149,35 @@ export const getAllRoomTypes = async (req, res) => {
     }
 };
 
+
+export const updateRoomType = async (req, res) => {
+    const { id } = req.params;
+    const { code, name, description, capacity, area, status, employee, priceBegin } = req.body;
+
+    try {
+        const existingEmployee = await db.Employee.findOne({ where: { id: employee } });
+        if (!existingEmployee) {
+            return res.status(400).json(responseHelper(400, "Nhân viên không tồn tại", false, []));
+        }
+
+        const roomType = await db.RoomType.findOne({ where: { id } });
+        if (!roomType) {
+            return res.status(404).json(responseHelper(404, "Không tìm thấy loại phòng", false, {}));
+        }
+
+        const updatedRoomType = await roomType.update({
+            code,
+            name,
+            description,
+            capacity,
+            area,
+            status,
+            employee,
+            priceBegin
+        });
+
+        return res.status(200).json(responseHelper(200, "Cập nhật loại phòng thành công", true, updatedRoomType));
+    } catch (error) {
+        return res.status(500).json(responseHelper(500, "Cập nhật loại phòng không thành công", false, []));
+    }
+};
