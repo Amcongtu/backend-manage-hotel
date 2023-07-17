@@ -154,7 +154,6 @@ export const createBooking = async (req, res) => {
         if (!existingRoom) {
             return res.status(400).json(responseHelper(400, "Phòng không tồn tại", false, []));
         }
-        console.log(existingCustomer)
 
         if (existingBooking) {
             return res.status(400).json(responseHelper(400, "Đặt phòng không hợp lệ", false, []));
@@ -163,7 +162,8 @@ export const createBooking = async (req, res) => {
         // Tính toán tổng tiền dựa trên giá phòng và số ngày đặt phòng
         const pricePerNight = existingRoom.price;
         const numberOfNights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
-        const total = pricePerNight * numberOfNights;
+        let total = pricePerNight * numberOfNights;
+        console.log(numberOfNights)
 
         let serviceTotal = 0;
         for (const service of services) {
