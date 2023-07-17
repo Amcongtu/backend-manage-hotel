@@ -107,26 +107,37 @@ export const getRoomAndRelatedData = async (req, res) => {
     }
 };
 
-
 export const getAllRoomTypes = async (req, res) => {
     const { status } = req.query;
-    
 
     try {
         let roomTypes;
-    
+
         if (status) {
-            roomTypes = await db.RoomType.findAll({ where: { status } });
-        } 
-        
-        else {
-            roomTypes = await db.RoomType.findAll();
+            roomTypes = await db.RoomType.findAll({
+                where: { status },
+                include: [
+                    {
+                        model: db.ImageRoomType,
+                        attributes: ['value'],
+                    },
+                ],
+            });
+        } else {
+            roomTypes = await db.RoomType.findAll({
+                include: [
+                    {
+                        model: db.ImageRoomType,
+                        attributes: ['value'],
+                    },
+                ],
+            });
         }
-    
+
         return res.status(200).json(responseHelper(200, "Danh sách loại phòng", true, roomTypes));
     } catch (error) {
         console.log(error);
-    
+
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách loại phòng", false, []));
     }
 };
