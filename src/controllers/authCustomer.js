@@ -81,7 +81,7 @@ export const loginCustomer = async (req, res, next) => {
       }
   
       const token = jwt.sign(
-        { code: Customer.code, username: Customer.username, position: Customer.position },
+        { code: Customer.code, username: Customer.username, position: Customer.position, id: Customer.id },
         process.env.JWT_SECRET,
         { expiresIn: "2d" }
       );
@@ -90,6 +90,7 @@ export const loginCustomer = async (req, res, next) => {
         .status(200)
         .json(responseHelper(200, "Đăng nhập thành công", true, {
             token: token,
+            id: Customer.id,
             username: Customer.username,
             name: Customer.name,
             email:  Customer.email,

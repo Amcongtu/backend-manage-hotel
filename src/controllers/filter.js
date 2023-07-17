@@ -1,6 +1,7 @@
 import db from "../models";
 import { Op } from "sequelize";
 import { responseHelper } from "../helpers/response";
+import moment from 'moment';
 
 // export const filterRooms = async (req, res) => {
 //     let { startDate, endDate, adult, child } = req.query;
@@ -222,10 +223,10 @@ export const checkAvailability = async (req, res) => {
         });
 
         if (!room) {
-            return res.status(200).json(responseHelper(200, 'Phòng có sẵn', false, true));
+            return res.status(200).json(responseHelper(200, 'Phòng có sẵn', true, true));
         }
 
-        return res.status(200).json(responseHelper(200, 'Phòng không có sẵn', true, false));
+        return res.status(200).json(responseHelper(200, 'Phòng không có sẵn', false, false));
     } catch (error) {
         console.log(error);
         return res.status(500).json(responseHelper(500, 'Lỗi khi kiểm tra tình trạng phòng', false, {}));
