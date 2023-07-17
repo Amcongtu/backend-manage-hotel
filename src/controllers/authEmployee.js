@@ -96,7 +96,17 @@ export const loginEmployee = async (req, res, next) => {
   
       return res
         .status(200)
-        .json(responseHelper(200, "Đăng nhập thành công", true, [token]));
+        .json(responseHelper(200, "Đăng nhập thành công", true, 
+        {
+          token: token,
+          name: employee.name,
+          position: employee.position,
+          salary: employee.salary,
+          email: employee.email,
+          address: employee.address,
+          phone: employee.phone,
+          hireDate: employee.hireDate,
+        }));
     } catch (error) {
       return res
         .status(500)

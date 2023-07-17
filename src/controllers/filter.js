@@ -177,7 +177,7 @@ export const filterRooms = async (req, res) => {
         console.log(error);
         return res.status(500).json(responseHelper(500, 'Lỗi khi lọc danh sách phòng', false, {}));
     }
-};
+}
 
 export const checkAvailability = async (req, res) => {
     const { startDate, endDate, id } = req.query;
