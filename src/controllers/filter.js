@@ -104,25 +104,25 @@ export const filterRooms = async (req, res) => {
                 [Op.or]: [
                     {
                         checkInDate: {
-                            [Op.between]: [startDate, endDate]
-                        }
+                            [Op.between]: [startDate, endDate],
+                        },
                     },
                     {
                         checkOutDate: {
-                            [Op.between]: [startDate, endDate]
-                        }
+                            [Op.between]: [startDate, endDate],
+                        },
                     },
                     {
                         checkInDate: {
-                            [Op.lte]: startDate
+                            [Op.lte]: startDate,
                         },
                         checkOutDate: {
-                            [Op.gte]: endDate
-                        }
-                    }
-                ]
+                            [Op.gte]: endDate,
+                        },
+                    },
+                ],
             },
-            attributes: ['room']
+            attributes: ['room'],
         });
 
         const bookedRoomIds = bookings.map((booking) => booking.room);
@@ -135,37 +135,42 @@ export const filterRooms = async (req, res) => {
             where: {
                 id: { [Op.notIn]: bookedRoomIds },
                 status: 'published',
-                capacity: { [Op.gte]: totalAdults }
+                capacity: { [Op.gte]: totalAdults },
             },
             include: [
                 {
                     model: db.ImageRoom,
-                    attributes: ['value']
-                }
-            ]
+                    attributes: ['value'],
+                },
+            ],
         });
 
-        const result = [];
+        const roomTypeMap = new Map();
 
         for (const room of rooms) {
             const { roomType, ...roomData } = room.dataValues;
-            const roomTypeData = await db.RoomType.findOne(
-                { 
-                    where: { id: roomType }, 
-                    attributes: ['code', 'name', 'description', 'capacity', 'area', 'status', 'employee', 'priceBegin'] ,
-                    include: [
-                        {
-                            model: db.ImageRoomType,
-                            attributes: ['value']
-                        }
-                    ]
-                });
-
-            result.push({
-                ...roomTypeData.dataValues,
-                rooms: [roomData]
+            const roomTypeData = await db.RoomType.findOne({
+                where: { id: roomType },
+                attributes: ['code', 'name', 'description', 'capacity', 'area', 'status', 'employee', 'priceBegin'],
+                include: [
+                    {
+                        model: db.ImageRoomType,
+                        attributes: ['value'],
+                    },
+                ],
             });
+
+            if (!roomTypeMap.has(roomType)) {
+                roomTypeMap.set(roomType, {
+                    ...roomTypeData.dataValues,
+                    rooms: [roomData],
+                });
+            } else {
+                roomTypeMap.get(roomType).rooms.push(roomData);
+            }
         }
+
+        const result = [...roomTypeMap.values()];
 
         return res.status(200).json(responseHelper(200, 'Danh sách phòng đã được lọc thành công', true, result));
     } catch (error) {
