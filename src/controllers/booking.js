@@ -123,7 +123,6 @@ export const createBooking = async (req, res) => {
         employee,
         paymentAmount,
         paymentMethod,
-        total,
         services
     } = req.body;
 
