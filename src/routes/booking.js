@@ -1,5 +1,5 @@
 import express from "express";
-import {createBooking} from "../controllers/booking.js"
+import {createBooking, getBookingList} from "../controllers/booking.js"
 
 
 const router = express.Router()
@@ -8,4 +8,5 @@ const router = express.Router()
 
 router.post("/", createBooking )
 
+router.get("/", getBookingList)
 export default router

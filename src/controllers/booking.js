@@ -194,8 +194,7 @@ export const createBooking = async (req, res) => {
         for (const service of services) {
             const serviceData = await db.Service.findByPk(service.id);
             if (serviceData) {
-
-                let servicePrice = serviceData.amount;
+                const servicePrice = serviceData.amount;
                 serviceTotal += Number(servicePrice);
             }
         }
@@ -238,6 +237,15 @@ export const createBooking = async (req, res) => {
 
         await transaction.commit();
 
+        let transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: "phamminhquan12c1@gmail.com", // generated ethereal user
+                pass: process.env.APP_PASS_MAIL // generated ethereal password
+            }
+        })
         try {
             await transporter.sendMail(
                 mailConfig(
@@ -268,5 +276,28 @@ export const createBooking = async (req, res) => {
         return res
             .status(500)
             .json(responseHelper(500, "Đặt phòng không thành công", false, []));
+    }
+};
+
+
+export const getBookingList = async (req, res) => {
+    try {
+        const bookings = await db.Booking.findAll({
+            include: [
+                {
+                    model: db.Customer,
+                    attributes: ['id', 'name', 'email', 'phone'],
+                },
+                {
+                    model: db.Room,
+                    attributes: ['id', 'code'],
+                },
+            ],
+        });
+
+        return res.status(200).json(responseHelper(200, 'Danh sách booking', true, bookings));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(responseHelper(500, 'Lỗi khi lấy danh sách booking', false, {}));
     }
 };
