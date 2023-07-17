@@ -181,3 +181,34 @@ export const updateRoomType = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Cập nhật loại phòng không thành công", false, []));
     }
 };
+
+export const deleteRoomType = async (req, res) => {
+    const { id } = req.params;
+
+    const transaction = await db.sequelize.transaction();
+
+    try {
+        const roomType = await db.RoomType.findOne({ where: { id }, transaction });
+
+        if (!roomType) {
+            await transaction.rollback();
+            return res.status(404).json(responseHelper(404, "Không tìm thấy loại phòng", false, {}));
+        }
+
+        // Xóa các phòng liên quan
+        await db.Room.destroy({ where: { roomType: id }, transaction });
+
+        // Xóa các ảnh liên quan trong ImageRoomTypes
+        await db.ImageRoomType.destroy({ where: { roomType: id }, transaction });
+
+        // Xóa loại phòng
+        await roomType.destroy({ transaction });
+
+        await transaction.commit();
+
+        return res.status(200).json(responseHelper(200, "Xóa loại phòng thành công", true, {}));
+    } catch (error) {
+        await transaction.rollback();
+        return res.status(500).json(responseHelper(500, "Xóa loại phòng không thành công", false, []));
+    }
+};

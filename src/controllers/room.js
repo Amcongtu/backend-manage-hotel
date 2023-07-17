@@ -124,3 +124,32 @@ export const getRoomById = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy chi tiết phòng", false, {}));
     }
 };
+
+
+export const deleteRoom = async (req, res) => {
+    const { id } = req.params;
+
+    const transaction = await db.sequelize.transaction();
+
+    try {
+        const room = await db.Room.findOne({ where: { id }, transaction });
+
+        if (!room) {
+            await transaction.rollback();
+            return res.status(404).json(responseHelper(404, "Phòng không tồn tại", false, {}));
+        }
+
+        // Xóa các ảnh liên quan trong ImageRooms
+        await db.ImageRoom.destroy({ where: { room: id }, transaction });
+
+        // Xóa phòng
+        await room.destroy({ transaction });
+
+        await transaction.commit();
+
+        return res.status(200).json(responseHelper(200, "Xóa phòng thành công", true, {}));
+    } catch (error) {
+        await transaction.rollback();
+        return res.status(500).json(responseHelper(500, "Xóa phòng không thành công", false, []));
+    }
+};

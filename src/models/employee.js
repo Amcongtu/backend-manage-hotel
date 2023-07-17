@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Employee.hasMany(models.RoomType, { foreignKey: 'employee' });
       Employee.hasMany(models.Service, { foreignKey: 'employee' });
+      Employee.hasMany(models.Payment, { foreignKey: 'employee' });
 
     }
   }
