@@ -11,6 +11,7 @@
        */
       static associate(models) {
         // define association here
+        Service.hasMany(models.ServiceOfBooking, { foreignKey: 'service'});
       }
     }
     Service.init({
