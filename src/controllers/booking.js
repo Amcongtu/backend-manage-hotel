@@ -103,7 +103,7 @@ const mailConfig = (to, from, subject, text,) => {
 //         catch (error) {
 //             return res.status(200).json(responseHelper(200, `Đặt phòng thành công.`, true, { booking, payment }));
 //         }
-        
+
 //         return res.status(200).json(responseHelper(200, `Đặt phòng thành công, chúng tôi đã mail đến địa chỉ ${existingCustomer.email}`, true, { booking, payment }));
 //     }
 //     catch (error) {
@@ -136,86 +136,137 @@ export const createBooking = async (req, res) => {
             status = "spending";
         }
         if (!checkInDate || !checkOutDate) {
-            return res.status(400).json(responseHelper(400, "Ngày check in hoặc check out không được để trống", false, []));
+            return res
+                .status(400)
+                .json(
+                    responseHelper(
+                        400,
+                        "Ngày check in hoặc check out không được để trống",
+                        false,
+                        []
+                    )
+                );
         }
 
         if (!services) {
             services = [];
         }
 
-        const existingCustomer = await db.Customer.findOne({ where: { id: customer } });
+        const existingCustomer = await db.Customer.findOne({
+            where: { id: customer },
+        });
         const existingRoom = await db.Room.findOne({ where: { id: room } });
-        const existingBooking = await db.Booking.findOne({ where: { room, checkInDate, checkOutDate } });
+        const existingBooking = await db.Booking.findOne({
+            where: { room, checkInDate, checkOutDate },
+        });
 
         if (!existingCustomer) {
-            return res.status(400).json(responseHelper(400, "Khách hàng không tồn tại", false, []));
+            return res
+                .status(400)
+                .json(responseHelper(400, "Khách hàng không tồn tại", false, []));
         }
 
         if (!existingRoom) {
-            return res.status(400).json(responseHelper(400, "Phòng không tồn tại", false, []));
+            return res
+                .status(400)
+                .json(responseHelper(400, "Phòng không tồn tại", false, []));
         }
 
         if (existingBooking) {
-            return res.status(400).json(responseHelper(400, "Đặt phòng không hợp lệ", false, []));
+            return res
+                .status(400)
+                .json(responseHelper(400, "Đặt phòng không hợp lệ", false, []));
         }
+
+        // Chuyển đổi giá trị checkInDate và checkOutDate sang kiểu dữ liệu Date
+        const checkIn = new Date(checkInDate);
+        const checkOut = new Date(checkOutDate);
+
+        // Tính toán tổng số ngày đặt phòng
+        const timeDiff = Math.abs(checkOut.getTime() - checkIn.getTime());
+        const numberOfNights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
         // Tính toán tổng tiền dựa trên giá phòng và số ngày đặt phòng
         const pricePerNight = existingRoom.price;
-        const numberOfNights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
-        let total = pricePerNight * numberOfNights;
-        console.log(numberOfNights)
+        const total = pricePerNight * numberOfNights;
 
         let serviceTotal = 0;
         for (const service of services) {
             const serviceData = await db.Service.findByPk(service.id);
             if (serviceData) {
-                const servicePrice = serviceData.amount;
-                serviceTotal += servicePrice;
+
+                let servicePrice = serviceData.amount;
+                serviceTotal += Number(servicePrice);
             }
         }
- 
 
-        const booking = await db.Booking.create({
-            customer,
-            room,
-            checkInDate,
-            checkOutDate,
-            status,
-            total: total + serviceTotal,
-            employee
-        }, { transaction });
-
+        const booking = await db.Booking.create(
+            {
+                customer,
+                room,
+                checkInDate: checkIn,
+                checkOutDate: checkOut,
+                status,
+                total: total + serviceTotal,
+                employee,
+            },
+            { transaction }
+        );
 
         // Tạo danh sách các dịch vụ đi kèm
         for (const service of services) {
-            await db.ServiceOfBooking.create({
-                booking: booking.id,
-                service: service.id
-            }, { transaction });
+            await db.ServiceOfBooking.create(
+                {
+                    booking: booking.id,
+                    service: service.id,
+                },
+                { transaction }
+            );
         }
 
         // Tạo thanh toán cho đặt phòng
-        const payment = await db.Payment.create({
-            booking: booking.id,
-            paymentAmount: paymentAmount || 0,
-            paymentDate: new Date(),
-            employee,
-            paymentMethod: paymentMethod || "Chuyển khoản"
-        }, { transaction });
+        const payment = await db.Payment.create(
+            {
+                booking: booking.id,
+                paymentAmount: paymentAmount || 0,
+                paymentDate: new Date(),
+                employee,
+                paymentMethod: paymentMethod || "Chuyển khoản",
+            },
+            { transaction }
+        );
 
         await transaction.commit();
 
         try {
-            await transporter.sendMail(mailConfig(existingCustomer.email, "phamminhquan12c1@gmail.com", "XÁC NHẬN ĐẶT PHÒNG TẠI Q&N HOTEL", "ĐẶT PHÒNG THÀNH CÔNG"))
+            await transporter.sendMail(
+                mailConfig(
+                    existingCustomer.email,
+                    "phamminhquan12c1@gmail.com",
+                    "XÁC NHẬN ĐẶT PHÒNG TẠI Q&N HOTEL",
+                    "ĐẶT PHÒNG THÀNH CÔNG"
+                )
+            );
+        } catch (error) {
+            return res
+                .status(200)
+                .json(responseHelper(200, `Đặt phòng thành công.`, true, { booking, payment }));
         }
-        catch (error) {
-            return res.status(200).json(responseHelper(200, `Đặt phòng thành công.`, true, { booking, payment }));
-        }
-        
-        return res.status(200).json(responseHelper(200, `Đặt phòng thành công, chúng tôi đã mail đến địa chỉ ${existingCustomer.email}`, true, { booking, payment }));
 
+        return res
+            .status(200)
+            .json(
+                responseHelper(
+                    200,
+                    `Đặt phòng thành công, chúng tôi đã mail đến địa chỉ ${existingCustomer.email}`,
+                    true,
+                    { booking, payment }
+                )
+            );
     } catch (error) {
         await transaction.rollback();
-        return res.status(500).json(responseHelper(500, "Đặt phòng không thành công", false, []));
+        return res
+            .status(500)
+            .json(responseHelper(500, "Đặt phòng không thành công", false, []));
     }
 };
