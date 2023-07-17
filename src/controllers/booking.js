@@ -123,6 +123,7 @@ export const createBooking = async (req, res) => {
         employee,
         paymentAmount,
         paymentMethod,
+        total,
         services
     } = req.body;
 
@@ -170,8 +171,7 @@ export const createBooking = async (req, res) => {
             const serviceData = await db.Service.findByPk(service.id);
             if (serviceData) {
                 const servicePrice = serviceData.amount;
-                const serviceQuantity = service.quantity;
-                serviceTotal += servicePrice * serviceQuantity;
+                serviceTotal += servicePrice;
             }
         }
  
