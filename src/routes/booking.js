@@ -11,7 +11,7 @@ router.put("/:id",  updateBookingStatus )
 
 router.get("/", getBookingList)
 
-router.get("/tody",getTodayBookings)
+router.get("/today",getTodayBookings)
 
 
 export default router
