@@ -7,7 +7,7 @@ const router = express.Router()
 
 
 router.post("/", createBooking )
-router.put("/:id",  updateBookingStatus )
+router.put("/:id/status",  updateBookingStatus )
 
 router.get("/", getBookingList)
 
