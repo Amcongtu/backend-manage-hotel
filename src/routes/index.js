@@ -8,6 +8,8 @@ import bookingRouter from "./booking.js"
 import facilityRouter from "./facility.js"
 import serviceRouter from "./service.js"
 import paymentRouter from "./payment.js"
+import checkInRouter from "./checkOut.js"
+import checkOutRouter from "./checkOut.js"
 
 const initRoutes =  (app) => {
 
@@ -21,6 +23,8 @@ const initRoutes =  (app) => {
     app.use('/api/payment', paymentRouter)
     app.use('/api/facility', facilityRouter)
     app.use('/api/service', serviceRouter)
+    app.use('/api/booking/check-in', checkInRouter)
+    app.use('/api/booking/check-out', checkOutRouter)
 
 
 
