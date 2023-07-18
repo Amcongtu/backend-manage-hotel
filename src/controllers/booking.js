@@ -357,6 +357,7 @@ export const getTodayBookings = async (req, res) => {
 
         return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
     } catch (error) {
+        console.log(error)
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
     }
 };

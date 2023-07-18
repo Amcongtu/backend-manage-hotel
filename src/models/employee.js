@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       Employee.hasMany(models.RoomType, { foreignKey: 'employee' });
       Employee.hasMany(models.Service, { foreignKey: 'employee' });
       Employee.hasMany(models.Payment, { foreignKey: 'employee' });
+      Employee.hasMany(models.Booking, { foreignKey: 'employee' });
 
     }
   }
