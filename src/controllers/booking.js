@@ -111,7 +111,15 @@ const mailConfig = (to, from, subject, text,) => {
 //         return res.status(500).json(responseHelper(500, "Đặt phòng không thành công", false, []));
 //     }
 // };
-
+let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+        user: "phamminhquan12c1@gmail.com", // generated ethereal user
+        pass: process.env.APP_PASS_MAIL // generated ethereal password
+    }
+})
 
 export const createBooking = async (req, res) => {
     let {
@@ -237,15 +245,7 @@ export const createBooking = async (req, res) => {
 
         await transaction.commit();
 
-        let transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false, // true for 465, false for other ports
-            auth: {
-                user: "phamminhquan12c1@gmail.com", // generated ethereal user
-                pass: process.env.APP_PASS_MAIL // generated ethereal password
-            }
-        })
+
         try {
             await transporter.sendMail(
                 mailConfig(
@@ -306,25 +306,55 @@ export const updateBookingStatus = async (req, res) => {
     const { id } = req.params;
     let { status } = req.body;
 
+    const transaction = await db.sequelize.transaction();
+
     try {
         const booking = await db.Booking.findOne({ where: { id } });
+        let title = "CÁM ƠN BẠN ĐÃ SỬ DỤNG DỊCH VỤ CỦA Q&N HOTEL";
+        let message = "Cám ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi";
 
         if (!booking) {
             return res.status(404).json(responseHelper(404, "Không tìm thấy booking", false, {}));
         }
 
         if (!status) {
-            status = "confirmed"
+            title = "XÁC NHẬN ĐƠN ĐẶT PHÒNG ĐÃ ĐƯỢC XÁC NHẬN Q&N HOTEL";
+            status = "confirmed";
+            message = "Chúng tôi đã xác nhận đơn đặt phòng của bạn, cám ơn bạn đã sử dụng dịch vụ của chúng tôi.";
+        }
+
+        if (status === "cancelled") {
+            title = "XÁC NHẬN HỦY ĐƠN ĐẶT PHÒNG TẠI Q&N HOTEL";
+            status = "cancelled";
+            message = "Chúng tôi đã hủy đơn đặt phòng của bạn, cám ơn bạn đã sử dụng dịch vụ của chúng tôi.";
         }
 
         booking.status = status;
-        await booking.save();
+        await booking.save({ transaction });
+
+        try {
+            await transporter.sendMail(
+                mailConfig(
+                    existingCustomer.email,
+                    "phamminhquan12c1@gmail.com",
+                    title,
+                    message
+                )
+            );
+        } catch (error) {
+            await transaction.rollback();
+            return res.status(200).json(responseHelper(200, "Cập nhật trạng thái không thành công", true, {}));
+        }
+
+        await transaction.commit();
 
         return res.status(200).json(responseHelper(200, "Cập nhật trạng thái thành công", true, booking));
     } catch (error) {
+        await transaction.rollback();
         return res.status(500).json(responseHelper(500, "Cập nhật trạng thái không thành công", false, []));
     }
 };
+
 
 
 export const getTodayBookings = async (req, res) => {
