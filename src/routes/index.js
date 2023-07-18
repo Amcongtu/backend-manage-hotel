@@ -7,6 +7,7 @@ import filterRouter from "./filter.js"
 import bookingRouter from "./booking.js"
 import facilityRouter from "./facility.js"
 import serviceRouter from "./service.js"
+import paymentRouter from "./payment.js"
 
 const initRoutes =  (app) => {
 
@@ -17,6 +18,7 @@ const initRoutes =  (app) => {
     app.use('/api/comment', commentRouter)
     app.use('/api/filter', filterRouter)
     app.use('/api/booking', bookingRouter)
+    app.use('/api/payment', paymentRouter)
     app.use('/api/facility', facilityRouter)
     app.use('/api/service', serviceRouter)
 
