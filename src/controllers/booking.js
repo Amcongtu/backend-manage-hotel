@@ -313,8 +313,7 @@ export const updateBookingStatus = async (req, res) => {
             return res.status(404).json(responseHelper(404, "Không tìm thấy booking", false, {}));
         }
 
-        if(!status)
-        {
+        if (!status) {
             status = "confirmed"
         }
 
@@ -332,22 +331,32 @@ export const getTodayBookings = async (req, res) => {
     const today = new Date();
     const startOfDay = new Date(today);
     startOfDay.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00
-    
+
     const endOfDay = new Date(today);
     endOfDay.setHours(23, 59, 59, 999); // Đặt thời gian về 23:59:59.999
-    
+
     try {
-      const bookings = await db.Booking.findAll({
-        where: {
-          checkInDate: {
-            [db.Sequelize.Op.between]: [startOfDay, endOfDay], // Sử dụng phạm vi thời gian
-          },
-          status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] },
-        },
-      });
-    
-      return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
+        const bookings = await db.Booking.findAll({
+            where: {
+                checkInDate: {
+                    [db.Sequelize.Op.between]: [startOfDay, endOfDay], // Sử dụng phạm vi thời gian
+                },
+                status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] },
+            },
+            include: [
+                {
+                    model: db.Employee, // Lấy thông tin nhân viên
+                    attributes: ['id', 'name', 'email'] // Chỉ lấy các trường id, name, email của nhân viên
+                },
+                {
+                    model: db.Customer, // Lấy thông tin khách hàng
+                    attributes: ['id', 'name', 'email'] // Chỉ lấy các trường id, name, email của khách hàng
+                }
+            ],
+        });
+
+        return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
     } catch (error) {
-      return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
+        return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
     }
-  };
+};
