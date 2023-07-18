@@ -302,77 +302,46 @@ export const getBookingList = async (req, res) => {
     }
 };
 
-
-
-
-
-
-
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export const updateBookingStatus = async (req, res) => {
+    const { id } = req.params;
+    let { status } = req.body;
+
+    try {
+        const booking = await db.Booking.findOne({ where: { id } });
+
+        if (!booking) {
+            return res.status(404).json(responseHelper(404, "Không tìm thấy booking", false, {}));
+        }
+
+        if(!status)
+        {
+            status = "confirmed"
+        }
+
+        booking.status = status;
+        await booking.save();
+
+        return res.status(200).json(responseHelper(200, "Cập nhật trạng thái thành công", true, booking));
+    } catch (error) {
+        return res.status(500).json(responseHelper(500, "Cập nhật trạng thái không thành công", false, []));
+    }
+};
+
+
+export const getTodayBookings = async (req, res) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Đặt giờ về 00:00:00
+  
+    try {
+      const bookings = await db.Booking.findAll({
+        where: {
+          checkInDate: today,
+          status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] }
+        }
+      });
+  
+      return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
+    } catch (error) {
+      return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
+    }
+  };
