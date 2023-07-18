@@ -328,6 +328,8 @@ export const updateBookingStatus = async (req, res) => {
 
 
 export const getTodayBookings = async (req, res) => {
+    const { status, phone } = req.query;
+
     const today = new Date();
     const startOfDay = new Date(today);
     startOfDay.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00
@@ -335,29 +337,53 @@ export const getTodayBookings = async (req, res) => {
     const endOfDay = new Date(today);
     endOfDay.setHours(23, 59, 59, 999); // Đặt thời gian về 23:59:59.999
 
+    let whereCondition = {
+        checkInDate: {
+            [db.Sequelize.Op.between]: [startOfDay, endOfDay], // Sử dụng phạm vi thời gian
+        },
+    };
+
+    if (status) {
+        whereCondition = {
+            ...whereCondition,
+            [db.Sequelize.Op.or]: [
+                { status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] } },
+                { status },
+            ],
+        };
+    } else {
+        whereCondition = {
+            ...whereCondition,
+            status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] },
+        };
+    }
+
+    if (phone) {
+        whereCondition = {
+            ...whereCondition,
+            "$Customer.phone$": phone,
+        };
+    }
+
     try {
         const bookings = await db.Booking.findAll({
-            where: {
-                checkInDate: {
-                    [db.Sequelize.Op.between]: [startOfDay, endOfDay], // Sử dụng phạm vi thời gian
-                },
-                status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] },
-            },
+            where: whereCondition,
             include: [
                 {
-                    model: db.Employee, // Lấy thông tin nhân viên
-                    attributes: ['id', 'name', 'email'] // Chỉ lấy các trường id, name, email của nhân viên
+                    model: db.Employee,
+                    attributes: ['id', 'name', 'email'],
                 },
                 {
-                    model: db.Customer, // Lấy thông tin khách hàng
-                    attributes: ['id', 'name', 'email'] // Chỉ lấy các trường id, name, email của khách hàng
-                }
+                    model: db.Customer,
+                    attributes: ['id', 'name', 'email'],
+                    where: phone ? { phone } : {},
+                },
             ],
         });
 
         return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
     }
 };
