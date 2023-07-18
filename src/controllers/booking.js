@@ -430,6 +430,14 @@ export const getTodayBookings = async (req, res) => {
                     attributes: ['id', 'name', 'email'],
                     where: phone ? { phone } : {},
                 },
+                {
+                    model: db.CheckIn,
+                    attributes: ['date'],
+                },
+                {
+                    model: db.CheckOut,
+                    attributes: ['date'],
+                },
             ],
         });
 
