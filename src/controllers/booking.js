@@ -301,7 +301,6 @@ export const getBookingList = async (req, res) => {
         return res.status(500).json(responseHelper(500, 'Lỗi khi lấy danh sách booking', false, {}));
     }
 };
-
 export const updateBookingStatus = async (req, res) => {
     const { id } = req.params;
     let { status } = req.body;
@@ -309,7 +308,16 @@ export const updateBookingStatus = async (req, res) => {
     const transaction = await db.sequelize.transaction();
 
     try {
-        const booking = await db.Booking.findOne({ where: { id } });
+        const booking = await db.Booking.findOne({
+            where: { id },
+            include: [
+                {
+                    model: db.Customer,
+                    attributes: ['email'],
+                },
+            ],
+        });
+
         let title = "CÁM ƠN BẠN ĐÃ SỬ DỤNG DỊCH VỤ CỦA Q&N HOTEL";
         let message = "Cám ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi";
 
@@ -335,7 +343,7 @@ export const updateBookingStatus = async (req, res) => {
         try {
             await transporter.sendMail(
                 mailConfig(
-                    existingCustomer.email,
+                    booking.Customer.email,
                     "phamminhquan12c1@gmail.com",
                     title,
                     message
