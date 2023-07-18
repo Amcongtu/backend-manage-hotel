@@ -8,7 +8,7 @@ import bookingRouter from "./booking.js"
 import facilityRouter from "./facility.js"
 import serviceRouter from "./service.js"
 import paymentRouter from "./payment.js"
-import checkInRouter from "./checkOut.js"
+import checkInRouter from "./checkIn.js"
 import checkOutRouter from "./checkOut.js"
 
 const initRoutes =  (app) => {

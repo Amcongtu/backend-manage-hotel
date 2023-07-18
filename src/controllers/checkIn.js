@@ -5,7 +5,7 @@ export const createCheckIn = async (req, res) => {
     const { booking, date, status, description, employee } = req.body;
 
     const currentDate = new Date();
-    const checkInDate = date || currentDate.toISOString(); // Sử dụng date từ request body hoặc lấy ngày giờ hiện tại dưới định dạng ISO
+    const checkInDate = date || currentDate; // Sử dụng date từ request body hoặc lấy ngày giờ hiện tại dưới định dạng ISO
 
     const transaction = await db.sequelize.transaction();
 
@@ -38,7 +38,7 @@ export const createCheckIn = async (req, res) => {
         return res.status(200).json(responseHelper(200, "Tạo Check-in thành công", true, checkIn));
     } catch (error) {
         await transaction.rollback();
-        console.log(error);
+        // console.log(error);
         return res.status(500).json(responseHelper(500, "Tạo Check-in không thành công", false, []));
     }
 };

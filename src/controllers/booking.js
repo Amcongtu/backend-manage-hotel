@@ -339,7 +339,16 @@ export const updateBookingStatus = async (req, res) => {
 
         booking.status = status;
         await booking.save({ transaction });
-
+        let transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: "phamminhquan12c1@gmail.com", // generated ethereal user
+                pass: process.env.APP_PASS_MAIL // generated ethereal password
+            }
+        })
+        
         try {
             await transporter.sendMail(
                 mailConfig(
@@ -350,6 +359,7 @@ export const updateBookingStatus = async (req, res) => {
                 )
             );
         } catch (error) {
+            console.log(error)
             await transaction.rollback();
             return res.status(200).json(responseHelper(200, "Cập nhật trạng thái không thành công", true, {}));
         }
