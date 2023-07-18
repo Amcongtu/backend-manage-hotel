@@ -330,16 +330,22 @@ export const updateBookingStatus = async (req, res) => {
 
 export const getTodayBookings = async (req, res) => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Đặt giờ về 00:00:00
-  
+    const startOfDay = new Date(today);
+    startOfDay.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00
+    
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999); // Đặt thời gian về 23:59:59.999
+    
     try {
       const bookings = await db.Booking.findAll({
         where: {
-          checkInDate: today,
-          status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] }
-        }
+          checkInDate: {
+            [db.Sequelize.Op.between]: [startOfDay, endOfDay], // Sử dụng phạm vi thời gian
+          },
+          status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] },
+        },
       });
-  
+    
       return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
     } catch (error) {
       return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
