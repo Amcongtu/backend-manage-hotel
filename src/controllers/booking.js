@@ -331,6 +331,10 @@ export const updateBookingStatus = async (req, res) => {
             message = "Chúng tôi đã xác nhận đơn đặt phòng của bạn, cám ơn bạn đã sử dụng dịch vụ của chúng tôi.";
         }
 
+        if (status != "cancelled" && status != "confirmed)
+        {
+            return res.status(400).json(responseHelper(400, "Trạng thái không hợp lệ", false, {}));
+        }
         if (status === "cancelled") {
             title = "XÁC NHẬN HỦY ĐƠN ĐẶT PHÒNG TẠI Q&N HOTEL";
             status = "cancelled";
@@ -361,7 +365,7 @@ export const updateBookingStatus = async (req, res) => {
         } catch (error) {
             console.log(error)
             await transaction.rollback();
-            return res.status(200).json(responseHelper(200, "Cập nhật trạng thái không thành công", true, {}));
+            return res.status(400).json(responseHelper(200, "Cập nhật trạng thái không thành công", true, {}));
         }
 
         await transaction.commit();
