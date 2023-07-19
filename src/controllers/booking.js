@@ -471,15 +471,15 @@ export const getCustomerBookings = async (req, res) => {
                             model: db.ImageRoom,
                             attributes: ['value'],
                         },
-                        {
-                            model: db.CheckIn,
-                            attributes: ['date'],
-                        },
-                        {
-                            model: db.CheckOut,
-                            attributes: ['date'],
-                        },
                     ],
+                },
+                {
+                    model: db.CheckIn,
+                    attributes: ['date'],
+                },
+                {
+                    model: db.CheckOut,
+                    attributes: ['date'],
                 },
                 {
                     model: db.Payment,
