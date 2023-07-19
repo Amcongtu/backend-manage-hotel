@@ -8,6 +8,7 @@ const router = express.Router()
 
 router.post("/", createBooking )
 
+router.get("/today",getTodayBookings)
 router.get("/:id",getBookingDetails)
 
 router.get("/customer/:id", getCustomerBookings )
@@ -16,7 +17,6 @@ router.put("/:id/status",  updateBookingStatus )
 
 router.get("/", getBookingList)
 
-router.get("/today",getTodayBookings)
 
 
 export default router

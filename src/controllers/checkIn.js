@@ -4,6 +4,7 @@ import { responseHelper } from "../helpers/response.js"
 export const createCheckIn = async (req, res) => {
     const { booking, date, status, description, employee } = req.body;
 
+    
     const currentDate = new Date();
     const checkInDate = date || currentDate; // Sử dụng date từ request body hoặc lấy ngày giờ hiện tại dưới định dạng ISO
 
