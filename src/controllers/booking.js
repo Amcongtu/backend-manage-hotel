@@ -446,9 +446,7 @@ export const getTodayBookings = async (req, res) => {
         console.log(error);
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
     }
-};
-
-export const getCustomerBookings = async (req, res) => {
+};export const getCustomerBookings = async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -468,13 +466,17 @@ export const getCustomerBookings = async (req, res) => {
                 {
                     model: db.Room,
                     attributes: ['id', 'name'],
+                    include: {
+                        model: db.ImageRoom,
+                        attributes: ['value'],
+                    },
                 },
                 {
                     model: db.Payment,
                     attributes: [[db.sequelize.fn('SUM', db.sequelize.col('paymentAmount')), 'totalPayment']],
                 },
             ],
-            group: ['Booking.id', 'Employee.id', 'Room.id', 'Payment.id'],
+            group: ['Booking.id', 'Employee.id', 'Room.id'],
         });
 
         return res.status(200).json(responseHelper(200, "Danh sách đơn đặt phòng của khách hàng", true, bookings));
