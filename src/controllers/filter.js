@@ -242,7 +242,6 @@ export const checkAvailability = async (req, res) => {
     }
 };
 
-
 export const getRoomStatusByDate = async (req, res) => {
     const { date } = req.body;
 
@@ -284,8 +283,15 @@ export const getRoomStatusByDate = async (req, res) => {
             attributes: ['room', 'status'],
         });
 
-        // Bước 2: Lấy danh sách tất cả các phòng
-        const allRooms = await db.Room.findAll();
+        // Bước 2: Lấy danh sách tất cả các phòng, bao gồm thông tin về `roomType`
+        const allRooms = await db.Room.findAll({
+            include: [
+                {
+                    model: db.RoomType,
+                    attributes: ['code', 'name'],
+                },
+            ],
+        });
 
         // Bước 3: Tạo danh sách phòng với trạng thái "free" cho các phòng không được đặt, và trạng thái từ bảng đặt phòng cho các phòng đã được đặt
         const roomStatus = allRooms.map((room) => {

@@ -8,7 +8,7 @@ const router = express.Router()
 router.get("/room", filterRooms)
 
 router.get("/room/available", checkAvailability)
-router.get("/room/status/", getRoomStatusByDate)
+router.post("/room/status/", getRoomStatusByDate)
 
 
 
