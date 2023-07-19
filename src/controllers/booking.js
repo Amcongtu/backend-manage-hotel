@@ -533,7 +533,7 @@ export const getBookingDetails = async (req, res) => {
                 },
                 {
                     model: db.Room,
-                    attributes: ['id', 'name', 'price'],
+                    attributes: ['id', 'name', "code", 'price'],
                 },
                 {
                     model: db.Employee,
@@ -557,7 +557,6 @@ export const getBookingDetails = async (req, res) => {
                         model: db.Service,
                         attributes: ['id', 'name', 'amount'],
                     },
-                  
                 },
             ],
         });
