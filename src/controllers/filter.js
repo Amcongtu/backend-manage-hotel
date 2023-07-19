@@ -121,12 +121,15 @@ export const filterRooms = async (req, res) => {
                             [Op.gte]: endDate,
                         },
                     },
+
                 ],
             },
-            attributes: ['room'],
+            attributes: ['room',"status"],
         });
 
-        const bookedRoomIds = bookings.map((booking) => booking.room);
+        const validBookings = bookings.filter((booking) => booking.status !== 'cancelled' && booking.status !== 'checkedOut');
+
+        const bookedRoomIds = validBookings.map((booking) => booking.room);
 
         if (!totalAdults) {
             totalAdults = 1;
@@ -178,7 +181,8 @@ export const filterRooms = async (req, res) => {
         console.log(error);
         return res.status(500).json(responseHelper(500, 'Lỗi khi lọc danh sách phòng', false, {}));
     }
-}
+};
+
 
 export const checkAvailability = async (req, res) => {
     const { startDate, endDate, id } = req.query;
@@ -235,5 +239,70 @@ export const checkAvailability = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json(responseHelper(500, 'Lỗi khi kiểm tra tình trạng phòng', false, {}));
+    }
+};
+
+
+export const getRoomStatusByDate = async (req, res) => {
+    const { date } = req.body;
+
+    try {
+        // Bước 1: Tìm các booking trong ngày truyền vào
+        const startOfDay = new Date(date);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const bookings = await db.Booking.findAll({
+            where: {
+                [Op.or]: [
+                    {
+                        checkInDate: {
+                            [Op.between]: [startOfDay, endOfDay],
+                        },
+                    },
+                    {
+                        checkOutDate: {
+                            [Op.between]: [startOfDay, endOfDay],
+                        },
+                    },
+                    {
+                        checkInDate: {
+                            [Op.lte]: startOfDay,
+                        },
+                        checkOutDate: {
+                            [Op.gte]: endOfDay,
+                        },
+                    },
+                ],
+            },
+            attributes: ['room', 'status'],
+        });
+
+        // Bước 2: Lấy danh sách tất cả các phòng
+        const allRooms = await db.Room.findAll();
+
+        // Bước 3: Tạo danh sách phòng với trạng thái "free" cho các phòng không được đặt, và trạng thái từ bảng đặt phòng cho các phòng đã được đặt
+        const roomStatus = allRooms.map((room) => {
+            const roomData = room.dataValues;
+            const foundBooking = bookings.find((booking) => booking.room === roomData.id);
+
+            if (foundBooking) {
+                return {
+                    ...roomData,
+                    status: foundBooking.status,
+                };
+            } else {
+                return {
+                    ...roomData,
+                    status: 'free',
+                };
+            }
+        });
+
+        return res.status(200).json(responseHelper(200, 'Danh sách trạng thái phòng', true, roomStatus));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(responseHelper(500, 'Lỗi khi lấy danh sách trạng thái phòng', false, {}));
     }
 };
