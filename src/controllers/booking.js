@@ -519,3 +519,56 @@ export const getCustomerBookings = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách đơn đặt phòng của khách hàng", false, []));
     }
 };
+
+export const getBookingDetails = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const booking = await db.Booking.findOne({
+            where: { id },
+            include: [
+                {
+                    model: db.Customer,
+                    attributes: ['id', 'name', 'email', 'phone'],
+                },
+                {
+                    model: db.Room,
+                    attributes: ['id', 'name', 'price'],
+                },
+                {
+                    model: db.Employee,
+                    attributes: ['id', 'name', 'email'],
+                },
+                {
+                    model: db.CheckIn,
+                    attributes: ['date', 'status', 'description'],
+                },
+                {
+                    model: db.CheckOut,
+                    attributes: ['date', 'status', 'description'],
+                },
+                {
+                    model: db.Payment,
+                    attributes: ['id', 'paymentAmount', 'paymentDate', 'paymentMethod'],
+                },
+                {
+                    model: db.Service,
+                    through: {
+                        model: db.ServiceOfBooking,
+                        attributes: [],
+                    },
+                    attributes: ['id', 'name', 'amount'],
+                },
+            ],
+        });
+
+        if (!booking) {
+            return res.status(404).json(responseHelper(404, "Không tìm thấy đơn đặt phòng", false, {}));
+        }
+
+        return res.status(200).json(responseHelper(200, "Thông tin chi tiết đơn đặt phòng", true, booking));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(responseHelper(500, "Lỗi khi lấy thông tin chi tiết đơn đặt phòng", false, []));
+    }
+};
