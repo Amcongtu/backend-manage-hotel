@@ -247,10 +247,15 @@ export const getRoomStatusByDate = async (req, res) => {
     const { date } = req.body;
 
     try {
+        let startOfDay = new Date()
+        let endOfDay = new Date()
+        if (date)
+        {
+            startOfDay = new Date(date);
+            endOfDay = new Date(date);
+        }
         // Bước 1: Tìm các booking trong ngày truyền vào
-        const startOfDay = new Date(date);
         startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(date);
         endOfDay.setHours(23, 59, 59, 999);
 
         const bookings = await db.Booking.findAll({
