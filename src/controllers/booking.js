@@ -552,12 +552,12 @@ export const getBookingDetails = async (req, res) => {
                     attributes: ['id', 'paymentAmount', 'paymentDate', 'paymentMethod'],
                 },
                 {
-                    model: db.Service,
-                    through: {
-                        model: db.ServiceOfBooking,
-                        attributes: [],
+                    model: db.ServiceOfBooking,
+                    include: {
+                        model: db.Service,
+                        attributes: ['id', 'name', 'amount'],
                     },
-                    attributes: ['id', 'name', 'amount'],
+                  
                 },
             ],
         });
