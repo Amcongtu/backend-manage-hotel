@@ -303,10 +303,13 @@ export const getBookingList = async (req, res) => {
 };
 export const updateBookingStatus = async (req, res) => {
     const { id } = req.params;
-    let { status } = req.body;
+    let { status, employee } = req.body;
 
     const transaction = await db.sequelize.transaction();
 
+    if(!employee) {
+        employee=null
+    }
     try {
         const booking = await db.Booking.findOne({
             where: { id },
@@ -340,7 +343,16 @@ export const updateBookingStatus = async (req, res) => {
             message = "Chúng tôi đã hủy đơn đặt phòng của bạn, cám ơn bạn đã sử dụng dịch vụ của chúng tôi.";
         }
 
+        if (status === "requestCancel")
+        {
+            title = "XÁC NHẬN CỦA Q&N HOTEL";
+            status = "requestCancel";
+            message = "Chúng tôi nhận được yêu cầu hủy đơn đặt phòng của bạn, chúng tôi sẽ phản hồi sớm nhất. Cám ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi.";
+        }
+
         booking.status = status;
+        booking.employee = employee
+        
         await booking.save({ transaction });
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
