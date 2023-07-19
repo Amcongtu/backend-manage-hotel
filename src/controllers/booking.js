@@ -447,3 +447,39 @@ export const getTodayBookings = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
     }
 };
+
+export const getCustomerBookings = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const customer = await db.Customer.findOne({ where: { id } });
+
+        if (!customer) {
+            return res.status(404).json(responseHelper(404, "Khách hàng không tồn tại", false, {}));
+        }
+
+        const bookings = await db.Booking.findAll({
+            where: { customer: id },
+            include: [
+                {
+                    model: db.Employee,
+                    attributes: ['id', 'name', 'email'],
+                },
+                {
+                    model: db.Room,
+                    attributes: ['id', 'name'],
+                },
+                {
+                    model: db.Payment,
+                    attributes: [[db.sequelize.fn('SUM', db.sequelize.col('paymentAmount')), 'totalPayment']],
+                },
+            ],
+            group: ['Booking.id', 'Employee.id', 'Room.id', 'Payment.id'],
+        });
+
+        return res.status(200).json(responseHelper(200, "Danh sách đơn đặt phòng của khách hàng", true, bookings));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách đơn đặt phòng của khách hàng", false, []));
+    }
+};
