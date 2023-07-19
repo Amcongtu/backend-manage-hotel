@@ -410,9 +410,10 @@ export const getTodayBookings = async (req, res) => {
     endOfDay.setHours(23, 59, 59, 999); // Đặt thời gian về 23:59:59.999
 
     let whereCondition = {
-        checkInDate: {
-            [db.Sequelize.Op.between]: [startOfDay, endOfDay], // Sử dụng phạm vi thời gian
-        },
+        [db.Sequelize.Op.and]: [
+            { checkInDate: { [db.Sequelize.Op.lte]: endOfDay } }, // Ngày check-in phải nhỏ hơn hoặc bằng endOfDay
+            { checkOutDate: { [db.Sequelize.Op.gte]: startOfDay } }, // Ngày check-out phải lớn hơn hoặc bằng startOfDay
+        ],
     };
 
     if (status) {
@@ -467,6 +468,8 @@ export const getTodayBookings = async (req, res) => {
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
     }
 };
+
+
 export const getCustomerBookings = async (req, res) => {
     const { id } = req.params;
 
