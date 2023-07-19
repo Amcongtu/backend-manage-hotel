@@ -331,8 +331,7 @@ export const updateBookingStatus = async (req, res) => {
             message = "Chúng tôi đã xác nhận đơn đặt phòng của bạn, cám ơn bạn đã sử dụng dịch vụ của chúng tôi.";
         }
 
-        if (status != "cancelled" && status != "confirmed")
-        {
+        if (status != "cancelled" && status != "confirmed") {
             return res.status(400).json(responseHelper(400, "Trạng thái không hợp lệ", false, {}));
         }
         if (status === "cancelled") {
@@ -352,7 +351,7 @@ export const updateBookingStatus = async (req, res) => {
                 pass: process.env.APP_PASS_MAIL // generated ethereal password
             }
         })
-        
+
         try {
             await transporter.sendMail(
                 mailConfig(
@@ -446,7 +445,8 @@ export const getTodayBookings = async (req, res) => {
         console.log(error);
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
     }
-};export const getCustomerBookings = async (req, res) => {
+};
+export const getCustomerBookings = async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -466,10 +466,20 @@ export const getTodayBookings = async (req, res) => {
                 {
                     model: db.Room,
                     attributes: ['id', 'name'],
-                    include: {
-                        model: db.ImageRoom,
-                        attributes: ['value'],
-                    },
+                    include: [
+                        {
+                            model: db.ImageRoom,
+                            attributes: ['value'],
+                        },
+                        {
+                            model: db.CheckIn,
+                            attributes: ['date'],
+                        },
+                        {
+                            model: db.CheckOut,
+                            attributes: ['date'],
+                        },
+                    ],
                 },
                 {
                     model: db.Payment,
