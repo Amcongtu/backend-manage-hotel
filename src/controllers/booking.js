@@ -243,7 +243,8 @@ export const createBooking = async (req, res) => {
             { transaction }
         );
 
-        await transaction.commit();
+        await transaction.commit()
+
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -342,7 +343,7 @@ export const updateBookingStatus = async (req, res) => {
             message = "Chúng tôi đã xác nhận đơn đặt phòng của bạn, cám ơn bạn đã sử dụng dịch vụ của chúng tôi.";
         }
 
-        if (status != "cancelled" && status != "confirmed") {
+        if (status != "cancelled" || status != "confirmed" || status != "requestCancel") {
             return res.status(400).json(responseHelper(400, "Trạng thái không hợp lệ", false, {}));
         }
         if (status === "cancelled") {
