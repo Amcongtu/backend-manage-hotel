@@ -12,6 +12,7 @@
       static associate(models) {
         // define association here
         ServiceOfBooking.belongsTo(models.Service, { foreignKey: 'service'});
+        ServiceOfBooking.belongsTo(models.Booking, { foreignKey: 'booking'});
 
       }
     }
