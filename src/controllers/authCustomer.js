@@ -108,7 +108,7 @@ export const loginCustomer = async (req, res, next) => {
 
 export const findCustomers = async (req, res) => {
   // Lấy các điều kiện từ query params
-  const { name, email, phone } = req.query;
+  const { name, email, phone } = req.body;
 
   try {
     // Tạo một object để chứa các điều kiện truy vấn từ người dùng
@@ -117,6 +117,7 @@ export const findCustomers = async (req, res) => {
     // Thêm điều kiện vào object nếu được truyền từ query params
     if (name) {
       whereCondition.name = name;
+      console.log()
     }
 
     if (email) {
