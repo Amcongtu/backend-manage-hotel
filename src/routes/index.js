@@ -10,6 +10,7 @@ import serviceRouter from "./service.js"
 import paymentRouter from "./payment.js"
 import checkInRouter from "./checkIn.js"
 import checkOutRouter from "./checkOut.js"
+import statisticsRouter from "./report.js"
 
 const initRoutes =  (app) => {
 
@@ -25,7 +26,7 @@ const initRoutes =  (app) => {
     app.use('/api/service', serviceRouter)
     app.use('/api/booking/check-in', checkInRouter)
     app.use('/api/booking/check-out', checkOutRouter)
-
+    app.use('/api/report', statisticsRouter)
 
 
     
