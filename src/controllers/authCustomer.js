@@ -39,7 +39,7 @@ export const registerCustomer = async (req, res, next) => {
     })
 
     if (!response[1]) {
-      return res.status(400).json(responseHelper(200, "Tồn tài tại khoản trong hệ thống", false, [token]))
+      return res.status(400).json(responseHelper(200, "Tồn tài tại khoản trong hệ thống", false, []))
 
     }
     const token = response[1] && jwt.sign({ code: response[0].code, username: response[0].username, position: response[0].position }, process.env.JWT_SECRET, { expiresIn: "2d" })

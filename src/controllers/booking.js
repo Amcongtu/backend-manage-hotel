@@ -88,7 +88,7 @@ export const createBooking = async (req, res) => {
         // Tính toán tổng tiền dựa trên giá phòng và số ngày đặt phòng
         const pricePerNight = existingRoom.price;
         const total = pricePerNight * numberOfNights;
-        
+
         let serviceTotal = 0;
         for (const service of services) {
             const serviceData = await db.Service.findByPk(service.id);
@@ -133,44 +133,67 @@ export const createBooking = async (req, res) => {
             },
             { transaction }
         );
-
-        await transaction.commit()
-
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
-            secure: false, // true for 465, false for other ports
+            secure: false,
             auth: {
-                user: "phamminhquan12c1@gmail.com", // generated ethereal user
-                pass: process.env.APP_PASS_MAIL // generated ethereal password
+                user: "phamminhquan12c1@gmail.com",
+                pass: process.env.APP_PASS_MAIL
             }
-        })
+        });
+
+        let mailContent = {
+            to: existingCustomer.email,
+            from: "phamminhquan12c1@gmail.com",
+            subject: "XÁC NHẬN ĐẶT PHÒNG TẠI Q&N HOTEL",
+            text: "Đặt phòng thành công"
+        };
 
         try {
-            await transporter.sendMail(
-                mailConfig(
-                    existingCustomer.email,
-                    "phamminhquan12c1@gmail.com",
-                    "XÁC NHẬN ĐẶT PHÒNG TẠI Q&N HOTEL",
-                    "ĐẶT PHÒNG THÀNH CÔNG"
-                )
-            );
+            await transporter.sendMail(mailContent);
         } catch (error) {
             return res
                 .status(200)
                 .json(responseHelper(200, `Đặt phòng thành công.`, true, { booking, payment }));
         }
 
-        return res
-            .status(200)
-            .json(
-                responseHelper(
-                    200,
-                    `Đặt phòng thành công, chúng tôi đã mail đến địa chỉ ${existingCustomer.email}`,
-                    true,
-                    { booking, payment }
-                )
-            );
+        // Kiểm tra nếu status là "checkedIn", thêm checkin mới
+        if (status === "checkedIn") {
+            try {
+                const existingEmployee = await db.Employee.findOne({ where: { id: employee } });
+
+                if (!existingEmployee) {
+                    return res.status(400).json(responseHelper(400, "Nhân viên không tồn tại", false, []));
+                }
+
+                const currentDate = new Date();
+                const checkInDate = currentDate.toISOString();
+
+                const checkIn = await db.CheckIn.create({
+                    booking: booking.id,
+                    date: checkInDate,
+                    status: "checkedIn",
+                    description: "Checked in",
+                    employee,
+                }, { transaction });
+
+                // Cập nhật trạng thái của booking thành "checkedIn"
+                booking.status = "checkedIn";
+                await booking.save({ transaction });
+
+                await transaction.commit();
+
+                return res.status(200).json(responseHelper(200, "Đặt phòng và check-in thành công", true, { booking, payment, checkIn }));
+            } catch (error) {
+                await transaction.rollback();
+                return res.status(500).json(responseHelper(500, "Đặt phòng và check-in không thành công", false, []));
+            }
+        } else {
+            // Nếu status không phải "checkedIn", commit transaction và trả về kết quả đặt phòng
+            await transaction.commit();
+            return res.status(200).json(responseHelper(200, "Đặt phòng thành công", true, { booking, payment }));
+        }
     } catch (error) {
         await transaction.rollback();
         return res
