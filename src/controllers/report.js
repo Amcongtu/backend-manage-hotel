@@ -122,3 +122,56 @@ export const getRoomTypeBookingPercentage = async (req, res) => {
             .json(responseHelper(500, "Lỗi khi thực hiện thống kê", false, {}));
     }
 };
+
+export const getOrdersByDimension = async (req, res) => {
+    const { dimension } = req.body;
+
+    try {
+        let startDate, endDate;
+
+        switch (dimension) {
+            case "week":
+                startDate = moment().startOf("isoWeek");
+                endDate = moment();
+                break;
+            case "month":
+                startDate = moment().startOf("month");
+                endDate = moment();
+                break;
+            case "quarter":
+                startDate = moment().startOf("quarter");
+                endDate = moment();
+                break;
+            case "year":
+                startDate = moment().startOf("year");
+                endDate = moment();
+                break;
+            default:
+                return res.status(400).json(responseHelper(400, "Giá trị 'dimension' không hợp lệ", false, {}));
+        }
+
+        const ordersByDate = await db.Booking.findAll({
+            attributes: [
+                [db.sequelize.fn("date", db.sequelize.col("createdAt")), "date"],
+                [db.sequelize.fn("count", "id"), "data"],
+            ],
+            where: {
+                createdAt: { [db.Sequelize.Op.between]: [startDate.toDate(), endDate.toDate()] },
+            },
+            group: [db.sequelize.fn("date", db.sequelize.col("createdAt"))],
+            order: [[db.sequelize.col("createdAt"), "ASC"]],
+        });
+
+        const result = ordersByDate.map((order) => ({
+            date: order.dataValues.date,
+            data: order.dataValues.data,
+        }));
+
+        return res.status(200).json(responseHelper(200, "Thống kê số lượng đơn theo ngày", true, result));
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(500)
+            .json(responseHelper(500, "Lỗi khi thực hiện thống kê", false, {}));
+    }
+};
