@@ -6,9 +6,10 @@ const router = express.Router()
 
 
 
+router.get("/today",getTodayBookings)
+
 router.post("/", createBooking )
 
-router.get("/today",getTodayBookings)
 router.get("/:id",getBookingDetails)
 
 router.get("/customer/:id", getCustomerBookings )

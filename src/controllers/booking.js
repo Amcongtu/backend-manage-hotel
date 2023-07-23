@@ -313,75 +313,159 @@ export const updateBookingStatus = async (req, res) => {
 
 
 
+// export const getTodayBookings = async (req, res) => {
+//     const { status, phone } = req.query;
+
+//     const today = new Date();
+//     const startOfDay = new Date(today);
+//     startOfDay.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00
+
+//     const endOfDay = new Date(today);
+//     endOfDay.setHours(23, 59, 59, 999); // Đặt thời gian về 23:59:59.999
+
+//     let whereCondition = {
+//         [db.Sequelize.Op.and]: [
+//             { checkInDate: { [db.Sequelize.Op.lte]: endOfDay } }, // Ngày check-in phải nhỏ hơn hoặc bằng endOfDay
+//             { checkOutDate: { [db.Sequelize.Op.gte]: startOfDay } }, // Ngày check-out phải lớn hơn hoặc bằng startOfDay
+//         ],
+//     };
+
+//     if (status) {
+//         whereCondition = {
+//             ...whereCondition,
+//             [db.Sequelize.Op.or]: [
+//                 { status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] } },
+//                 { status },
+//             ],
+//         };
+//     } else {
+//         whereCondition = {
+//             ...whereCondition,
+//             status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] },
+//         };
+//     }
+
+//     if (phone) {
+//         whereCondition = {
+//             ...whereCondition,
+//             "$Customer.phone$": phone,
+//         };
+//     }
+
+//     try {
+//         const bookings = await db.Booking.findAll({
+//             where: whereCondition,
+//             include: [
+//                 {
+//                     model: db.Employee,
+//                     attributes: ['id', 'name', 'email'],
+//                 },
+//                 {
+//                     model: db.Customer,
+//                     attributes: ['id', 'name', 'email'],
+//                     where: phone ? { phone } : {},
+//                 },
+//                 {
+//                     model: db.CheckIn,
+//                     attributes: ['date'],
+//                 },
+//                 {
+//                     model: db.CheckOut,
+//                     attributes: ['date'],
+//                 },
+//             ],
+//         });
+
+//         return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
+//     }
+// };
+
 export const getTodayBookings = async (req, res) => {
     const { status, phone } = req.query;
-
+  
     const today = new Date();
     const startOfDay = new Date(today);
-    startOfDay.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00
-
+    startOfDay.setHours(0, 0, 0, 0);
+  
     const endOfDay = new Date(today);
-    endOfDay.setHours(23, 59, 59, 999); // Đặt thời gian về 23:59:59.999
-
+    endOfDay.setHours(23, 59, 59, 999);
+  
     let whereCondition = {
-        [db.Sequelize.Op.and]: [
-            { checkInDate: { [db.Sequelize.Op.lte]: endOfDay } }, // Ngày check-in phải nhỏ hơn hoặc bằng endOfDay
-            { checkOutDate: { [db.Sequelize.Op.gte]: startOfDay } }, // Ngày check-out phải lớn hơn hoặc bằng startOfDay
-        ],
+      [db.Sequelize.Op.and]: [
+        { checkInDate: { [db.Sequelize.Op.lte]: endOfDay } },
+        { checkOutDate: { [db.Sequelize.Op.gte]: startOfDay } },
+      ],
     };
-
+  
     if (status) {
-        whereCondition = {
-            ...whereCondition,
-            [db.Sequelize.Op.or]: [
-                { status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] } },
-                { status },
-            ],
-        };
+      whereCondition = {
+        ...whereCondition,
+        [db.Sequelize.Op.or]: [
+          { status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] } },
+          { status },
+        ],
+      };
     } else {
-        whereCondition = {
-            ...whereCondition,
-            status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] },
-        };
+      whereCondition = {
+        ...whereCondition,
+        status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] },
+      };
     }
-
+  
     if (phone) {
-        whereCondition = {
-            ...whereCondition,
-            "$Customer.phone$": phone,
-        };
+      whereCondition = {
+        ...whereCondition,
+        "$Customer.phone$": phone,
+      };
     }
-
+  
     try {
-        const bookings = await db.Booking.findAll({
-            where: whereCondition,
+      const bookings = await db.Booking.findAll({
+        where: whereCondition,
+        include: [
+          {
+            model: db.Employee,
+            attributes: ["id", "name", "email"],
+          },
+          {
+            model: db.Customer,
+            attributes: ["id", "name", "email"],
+            where: phone ? { phone } : {},
+          },
+          {
+            model: db.CheckIn,
+            attributes: ["date"],
+          },
+          {
+            model: db.CheckOut,
+            attributes: ["date"],
+          },
+          {
+            model: db.ServiceOfBooking,
+            attributes: ["createdAt"],
             include: [
-                {
-                    model: db.Employee,
-                    attributes: ['id', 'name', 'email'],
-                },
-                {
-                    model: db.Customer,
-                    attributes: ['id', 'name', 'email'],
-                    where: phone ? { phone } : {},
-                },
-                {
-                    model: db.CheckIn,
-                    attributes: ['date'],
-                },
-                {
-                    model: db.CheckOut,
-                    attributes: ['date'],
-                },
+              {
+                model: db.Service,
+                attributes: ["id", "name", "amount"],
+              },
             ],
-        });
-
-        return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
+          },
+          {
+            model: db.Payment,
+            attributes: ["paymentAmount", "paymentDate", "paymentMethod"],
+          },
+        ],
+      });
+  
+      return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
     } catch (error) {
-        console.log(error);
-        return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
+      console.log(error);
+      return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
     }
-};
+  };
 
 
 export const getCustomerBookings = async (req, res) => {
