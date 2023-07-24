@@ -86,14 +86,14 @@ export const createBooking = async (req, res) => {
         const numberOfNights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
         // Tính toán tổng tiền dựa trên giá phòng và số ngày đặt phòng
-        const pricePerNight = existingRoom.price;
+        const pricePerNight = Number(existingRoom.price);
         const total = pricePerNight * numberOfNights;
 
         let serviceTotal = 0;
         for (const service of services) {
             const serviceData = await db.Service.findByPk(service.id);
             if (serviceData) {
-                const servicePrice = serviceData.amount;
+                const servicePrice = Number(serviceData.amount);
                 serviceTotal += Number(servicePrice);
             }
         }
@@ -105,7 +105,7 @@ export const createBooking = async (req, res) => {
                 checkInDate: checkIn,
                 checkOutDate: checkOut,
                 status,
-                total: total + serviceTotal,
+                total: Number(total) + Number(serviceTotal),
                 employee,
             },
             { transaction }
