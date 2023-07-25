@@ -230,8 +230,8 @@ export const updateBookingStatus = async (req, res) => {
 
     const transaction = await db.sequelize.transaction();
 
-    if(!employee) {
-        employee=null
+    if (!employee) {
+        employee = null
     }
     try {
         const booking = await db.Booking.findOne({
@@ -266,8 +266,7 @@ export const updateBookingStatus = async (req, res) => {
             message = "Chúng tôi đã hủy đơn đặt phòng của bạn, cám ơn bạn đã sử dụng dịch vụ của chúng tôi.";
         }
 
-        if (status === "requestCancel")
-        {
+        if (status === "requestCancel") {
             title = "XÁC NHẬN CỦA Q&N HOTEL";
             status = "requestCancel";
             message = "Chúng tôi nhận được yêu cầu hủy đơn đặt phòng của bạn, chúng tôi sẽ phản hồi sớm nhất. Cám ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi.";
@@ -385,87 +384,87 @@ export const updateBookingStatus = async (req, res) => {
 
 export const getTodayBookings = async (req, res) => {
     const { status, phone } = req.query;
-  
+
     const today = new Date();
     const startOfDay = new Date(today);
     startOfDay.setHours(0, 0, 0, 0);
-  
+
     const endOfDay = new Date(today);
     endOfDay.setHours(23, 59, 59, 999);
-  
+
     let whereCondition = {
-      [db.Sequelize.Op.and]: [
-        { checkInDate: { [db.Sequelize.Op.lte]: endOfDay } },
-        { checkOutDate: { [db.Sequelize.Op.gte]: startOfDay } },
-      ],
+        [db.Sequelize.Op.and]: [
+            { checkInDate: { [db.Sequelize.Op.lte]: endOfDay } },
+            { checkOutDate: { [db.Sequelize.Op.gte]: startOfDay } },
+        ],
     };
-  
+
     if (status) {
-      whereCondition = {
-        ...whereCondition,
-        [db.Sequelize.Op.or]: [
-          { status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] } },
-          { status },
-        ],
-      };
-    } else {
-      whereCondition = {
-        ...whereCondition,
-        status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] },
-      };
-    }
-  
-    if (phone) {
-      whereCondition = {
-        ...whereCondition,
-        "$Customer.phone$": phone,
-      };
-    }
-  
-    try {
-      const bookings = await db.Booking.findAll({
-        where: whereCondition,
-        include: [
-          {
-            model: db.Employee,
-            attributes: ["id", "name", "email"],
-          },
-          {
-            model: db.Customer,
-            attributes: ["id", "name", "email"],
-            where: phone ? { phone } : {},
-          },
-          {
-            model: db.CheckIn,
-            attributes: ["date"],
-          },
-          {
-            model: db.CheckOut,
-            attributes: ["date"],
-          },
-          {
-            model: db.ServiceOfBooking,
-            attributes: ["createdAt"],
-            include: [
-              {
-                model: db.Service,
-                attributes: ["id", "name", "amount"],
-              },
+        whereCondition = {
+            ...whereCondition,
+            [db.Sequelize.Op.or]: [
+                { status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] } },
+                { status },
             ],
-          },
-          {
-            model: db.Payment,
-            attributes: ["paymentAmount", "paymentDate", "paymentMethod"],
-          },
-        ],
-      });
-  
-      return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
+        };
+    } else {
+        whereCondition = {
+            ...whereCondition,
+            status: { [db.Sequelize.Op.notIn]: ["cancelled", "spending"] },
+        };
     }
-  };
+
+    if (phone) {
+        whereCondition = {
+            ...whereCondition,
+            "$Customer.phone$": phone,
+        };
+    }
+
+    try {
+        const bookings = await db.Booking.findAll({
+            where: whereCondition,
+            include: [
+                {
+                    model: db.Employee,
+                    attributes: ["id", "name", "email"],
+                },
+                {
+                    model: db.Customer,
+                    attributes: ["id", "name", "email"],
+                    where: phone ? { phone } : {},
+                },
+                {
+                    model: db.CheckIn,
+                    attributes: ["date"],
+                },
+                {
+                    model: db.CheckOut,
+                    attributes: ["date"],
+                },
+                {
+                    model: db.ServiceOfBooking,
+                    attributes: ["createdAt"],
+                    include: [
+                        {
+                            model: db.Service,
+                            attributes: ["id", "name", "amount"],
+                        },
+                    ],
+                },
+                {
+                    model: db.Payment,
+                    attributes: ["paymentAmount", "paymentDate", "paymentMethod"],
+                },
+            ],
+        });
+
+        return res.status(200).json(responseHelper(200, "Danh sách booking hôm nay", true, bookings));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(responseHelper(500, "Lỗi khi lấy danh sách booking hôm nay", false, []));
+    }
+};
 
 
 export const getCustomerBookings = async (req, res) => {
@@ -567,5 +566,41 @@ export const getBookingDetails = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json(responseHelper(500, "Lỗi khi lấy thông tin chi tiết đơn đặt phòng", false, []));
+    }
+};
+
+
+export const changeBookingRoom = async (req, res) => {
+    const { booking, room } = req.body;
+    const transaction = await db.sequelize.transaction();
+
+    try {
+        // Kiểm tra xem booking và room có tồn tại hay không
+        const existingBooking = await db.Booking.findByPk(booking);
+        const existingNewRoom = await db.Room.findByPk(room);
+
+        if (!existingBooking) {
+            return res.status(400).json(responseHelper(400, "Booking không tồn tại", false, {}));
+        }
+
+        if (!existingNewRoom) {
+            return res.status(400).json(responseHelper(400, "Phòng mới không tồn tại", false, {}));
+        }
+
+        // Lưu trạng thái ban đầu của booking để rollback nếu có lỗi
+        const originalRoomId = existingBooking.room;
+
+        // Cập nhật mã room mới cho booking
+        existingBooking.room = room;
+        await existingBooking.save({ transaction });
+
+        // Nếu không có lỗi, commit transaction
+        await transaction.commit();
+
+        return res.status(200).json(responseHelper(200, "Đổi phòng booking thành công", true, existingBooking));
+    } catch (error) {
+        await transaction.rollback();
+        console.log(error);
+        return res.status(500).json(responseHelper(500, "Lỗi khi đổi phòng booking", false, {}));
     }
 };
