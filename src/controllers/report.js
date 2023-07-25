@@ -204,6 +204,50 @@ export const getPaymentStatistics = async (req, res) => {
 };
 
 
+export const getTotalPaymentByDimension = async (req, res) => {
+    const { dimension } = req.body;
+
+    try {
+        let startDate, endDate;
+
+        switch (dimension) {
+            case "week":
+                startDate = moment().startOf("isoWeek");
+                endDate = moment();
+                break;
+            case "month":
+                startDate = moment().startOf("month");
+                endDate = moment();
+                break;
+            case "quarter":
+                startDate = moment().startOf("quarter");
+                endDate = moment();
+                break;
+            case "year":
+                startDate = moment().startOf("year");
+                endDate = moment();
+                break;
+            default:
+                return res.status(400).json(responseHelper(400, "Giá trị 'dimension' không hợp lệ", false, {}));
+        }
+
+        // Thực hiện truy vấn dữ liệu để lấy tổng số tiền thanh toán trong khoảng thời gian tương ứng
+        const totalPayment = await db.Payment.sum("paymentAmount", {
+            where: {
+                paymentDate: { [Op.between]: [startDate.toDate(), endDate.toDate()] },
+            },
+        });
+
+        return res.status(200).json(responseHelper(200, `Tổng số tiền thanh toán trong ${dimension}`, true, { totalPayment }));
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(500)
+            .json(responseHelper(500, "Lỗi khi thực hiện thống kê", false, {}));
+    }
+};
+
+
 
 export const getOrdersByDimension = async (req, res) => {
     const { dimension } = req.body;
