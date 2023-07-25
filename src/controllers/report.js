@@ -123,6 +123,88 @@ export const getRoomTypeBookingPercentage = async (req, res) => {
     }
 };
 
+export const getPaymentStatistics = async (req, res) => {
+    const { dimension } = req.body;
+
+    try {
+        let startDate, endDate;
+
+        switch (dimension) {
+            case "week":
+                startDate = moment().startOf("isoWeek");
+                endDate = moment();
+                break;
+            case "month":
+                startDate = moment().startOf("month");
+                endDate = moment();
+                break;
+            case "quarter":
+                startDate = moment().startOf("quarter");
+                endDate = moment();
+                break;
+            case "year":
+                startDate = moment().startOf("year");
+                endDate = moment();
+                break;
+            default:
+                return res.status(400).json(responseHelper(400, "Giá trị 'dimension' không hợp lệ", false, {}));
+        }
+
+        // Thực hiện truy vấn dữ liệu để lấy tổng số tiền thanh toán của từng loại phòng trong khoảng thời gian tương ứng
+        const paymentStatistics = await db.Payment.findAll({
+            attributes: [
+                [db.sequelize.col("Booking.Room.roomType"), "roomTypeId"],
+                [db.sequelize.fn("SUM", db.sequelize.col("paymentAmount")), "totalPayment"],
+            ],
+            include: [
+                {
+                    model: db.Booking,
+                    attributes: [],
+                    where: {
+                        checkInDate: { [Op.between]: [startDate.toDate(), endDate.toDate()] },
+                    },
+                    include: [
+                        {
+                            model: db.Room,
+                            attributes: ["roomType"],
+                        },
+                    ],
+                },
+            ],
+            group: [db.sequelize.col("Booking.Room.roomType")], // Gom nhóm theo trường roomType
+        });
+
+        // Tính tổng số tiền thanh toán
+        const totalPayment = paymentStatistics.reduce((total, payment) => total + payment.dataValues.totalPayment, 0);
+
+        // Tính tỷ lệ phần trăm thanh toán của từng loại phòng và lấy tên của loại phòng (roomType)
+        const paymentPercentage = await Promise.all(paymentStatistics.map(async (payment) => {
+            const roomTypeId = payment.dataValues.roomTypeId;
+            const roomTypeName = await db.RoomType.findOne({
+                where: { id: roomTypeId },
+                attributes: ["name"],
+            });
+
+            return {
+                roomType: roomTypeId,
+                roomTypeName: roomTypeName.name,
+                percentage: (payment.dataValues.totalPayment / totalPayment) * 100,
+            };
+        }));
+
+        return res
+            .status(200)
+            .json(responseHelper(200, "Thống kê phần trăm thanh toán theo loại phòng", true, paymentPercentage));
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(500)
+            .json(responseHelper(500, "Lỗi khi thực hiện thống kê", false, {}));
+    }
+};
+
+
+
 export const getOrdersByDimension = async (req, res) => {
     const { dimension } = req.body;
 
