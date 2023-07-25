@@ -247,7 +247,48 @@ export const getTotalPaymentByDimension = async (req, res) => {
     }
 };
 
+export const getTotalBookingsByDimension = async (req, res) => {
+    const { dimension } = req.body;
 
+    try {
+        let startDate, endDate;
+
+        switch (dimension) {
+            case "week":
+                startDate = moment().startOf("isoWeek");
+                endDate = moment();
+                break;
+            case "month":
+                startDate = moment().startOf("month");
+                endDate = moment();
+                break;
+            case "quarter":
+                startDate = moment().startOf("quarter");
+                endDate = moment();
+                break;
+            case "year":
+                startDate = moment().startOf("year");
+                endDate = moment();
+                break;
+            default:
+                return res.status(400).json(responseHelper(400, "Giá trị 'dimension' không hợp lệ", false, {}));
+        }
+
+        // Thực hiện truy vấn dữ liệu để lấy số lượng đơn đặt phòng trong khoảng thời gian tương ứng
+        const totalBookings = await db.Booking.count({
+            where: {
+                checkInDate: { [Op.between]: [startDate.toDate(), endDate.toDate()] },
+            },
+        });
+
+        return res.status(200).json(responseHelper(200, `Tổng số đơn đặt phòng trong ${dimension}`, true, { totalBookings }));
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(500)
+            .json(responseHelper(500, "Lỗi khi thực hiện thống kê", false, {}));
+    }
+};
 
 export const getOrdersByDimension = async (req, res) => {
     const { dimension } = req.body;
