@@ -42,12 +42,12 @@ export const createCheckIn = async (req, res) => {
             );
 
             // Cộng tiền dịch vụ vào tổng tiền
-            serviceTotal += existingService.amount;
+            serviceTotal += Number(existingService.amount);
         }
         let totalValue = Number(existingBooking.total) + Number(serviceTotal)
 
         // Cập nhật trường total của bảng Booking
-        existingBooking.total += totalValue;
+        existingBooking.total = Number(totalValue);
         await existingBooking.save({ transaction });
 
         const checkIn = await db.CheckIn.create({
