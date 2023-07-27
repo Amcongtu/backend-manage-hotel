@@ -430,6 +430,9 @@ export const getTodayBookings = async (req, res) => {
                     attributes: ["id", "name", "email"],
                 },
                 {
+                    model: db.Room, // Thêm mô hình Room vào include
+                },
+                {
                     model: db.Customer,
                     attributes: ["id", "name", "email"],
                     where: phone ? { phone } : {},
