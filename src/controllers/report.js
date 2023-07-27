@@ -277,7 +277,7 @@ export const getTotalBookingsByDimension = async (req, res) => {
         // Thực hiện truy vấn dữ liệu để lấy số lượng đơn đặt phòng trong khoảng thời gian tương ứng
         const totalBookings = await db.Booking.count({
             where: {
-                checkInDate: { [Op.between]: [startDate.toDate(), endDate.toDate()] },
+                createdAt: { [Op.between]: [startDate.toDate(), endDate.toDate()] },
             },
         });
 
