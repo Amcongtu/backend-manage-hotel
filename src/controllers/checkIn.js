@@ -47,8 +47,7 @@ export const createCheckIn = async (req, res) => {
         let totalValue = Number(existingBooking.total) + Number(serviceTotal)
 
         // Cập nhật trường total của bảng Booking
-        existingBooking.total += Number(totalValue);
-        console.log(typeof(existingBooking.total))
+        existingBooking.total = Number(totalValue);
         await existingBooking.save({ transaction });
 
         const checkIn = await db.CheckIn.create({
