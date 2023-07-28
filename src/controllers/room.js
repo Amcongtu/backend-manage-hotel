@@ -7,7 +7,14 @@ export const getAllRooms = async (req, res) => {
     try {
         var rooms = []
         if (!status) {
-            rooms = await db.Room.findAll({});
+            rooms = await db.Room.findAll({
+                include: [
+                    {
+                        model: db.ImageRoom,
+                        attributes: ["id", "value"], // Lấy thông tin cơ bản của hình ảnh (id và đường dẫn imageUrl)
+                    },
+                ],
+            });
         }
         else {
             rooms = await db.Room.findAll({ where: status });
