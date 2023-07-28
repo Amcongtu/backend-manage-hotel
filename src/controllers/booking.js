@@ -574,7 +574,7 @@ export const getBookingDetails = async (req, res) => {
 
 
 export const changeBookingRoom = async (req, res) => {
-    const { booking, room } = req.body;
+    const { booking, room, total } = req.body;
     const transaction = await db.sequelize.transaction();
 
     try {
@@ -582,6 +582,11 @@ export const changeBookingRoom = async (req, res) => {
         const existingBooking = await db.Booking.findByPk(booking);
         const existingNewRoom = await db.Room.findByPk(room);
 
+        if (!total)
+        {
+
+            return res.status(400).json(responseHelper(400, "Vui lòng nhập giá tiền", false, {}));
+        }
         if (!existingBooking) {
             return res.status(400).json(responseHelper(400, "Booking không tồn tại", false, {}));
         }
@@ -595,6 +600,7 @@ export const changeBookingRoom = async (req, res) => {
 
         // Cập nhật mã room mới cho booking
         existingBooking.room = room;
+        existingBooking.total = Number(total)
         await existingBooking.save({ transaction });
 
         // Nếu không có lỗi, commit transaction
