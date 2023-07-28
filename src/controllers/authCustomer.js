@@ -166,3 +166,18 @@ export const findCustomers = async (req, res) => {
       .json(responseHelper(500, "Lỗi khi tìm khách hàng", false, []));
   }
 };
+
+
+
+export const getCustomers = async (req, res) => {
+  try {
+    const customers = await db.Customer.findAll({
+      attributes: { exclude: ['password'] }, // Loại bỏ trường 'password' trong kết quả trả về
+    });
+
+    return res.status(200).json(responseHelper(200, 'Danh sách khách hàng', true, customers));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(responseHelper(500, 'Lỗi khi lấy danh sách khách hàng', false, []));
+  }
+};
