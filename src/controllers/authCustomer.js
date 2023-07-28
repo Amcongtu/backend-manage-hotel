@@ -45,7 +45,6 @@ export const registerCustomer = async (req, res, next) => {
     const token = response[1] && jwt.sign({ code: response[0].code, username: response[0].username, position: response[0].position }, process.env.JWT_SECRET, { expiresIn: "2d" })
 
     return res.status(200).json(responseHelper(200, "Đăng ký thành công", true,
-    [
       {
         token: token,
         id: response[0].id,
@@ -59,7 +58,7 @@ export const registerCustomer = async (req, res, next) => {
         image: response[0].image,
         dateOfBirth: response[0].dateOfBirth,
       }
-    ]))
+    ))
   }
   catch (error) {
     return res.status(500).json(responseHelper(500, "Đăng ký không thành công", false, []))
