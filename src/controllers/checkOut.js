@@ -2,7 +2,7 @@ import db from "../models/index.js"
 import { responseHelper } from "../helpers/response.js"
 
 export const createCheckOut = async (req, res) => {
-    const { booking, date, description, status, employee, services } = req.body;
+    let { booking, date, description, status, employee, services } = req.body;
 
     const currentDate = new Date();
     const checkOutDate = date || currentDate;
@@ -13,6 +13,10 @@ export const createCheckOut = async (req, res) => {
         const existingBooking = await db.Booking.findOne({ where: { id: booking } });
         const existingEmployee = await db.Employee.findOne({ where: { id: employee } });
 
+        if (!services)
+        {
+            services = []
+        }
         if (!existingBooking) {
             return res.status(400).json(responseHelper(400, "Đặt phòng không tồn tại", false, []));
         }
@@ -23,7 +27,9 @@ export const createCheckOut = async (req, res) => {
 
         // Tính tổng tiền dịch vụ sau khi thêm vào
         let serviceTotal = 0;
+
         for (const service of services) {
+
             const existingService = await db.Service.findOne({ where: { id: service.id } });
             if (!existingService) {
                 await transaction.rollback();
