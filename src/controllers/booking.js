@@ -147,7 +147,7 @@ export const createBooking = async (req, res) => {
             to: existingCustomer.email,
             from: "phamminhquan12c1@gmail.com",
             subject: "XÁC NHẬN ĐẶT PHÒNG TẠI Q&N HOTEL",
-            text: "Đặt phòng thành công"
+            text: `Đặt phòng thành công \n Mã đơn đặt phòng của quý khách là: ${booking.id} \n Qúy khách vui lòng checkin vào lúc 14h00 ngày ${checkIn} \n Cám ơn quý khách đã sử dụng dịch vụ của chúng tôi.` 
         };
 
         try {
