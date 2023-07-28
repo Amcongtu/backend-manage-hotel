@@ -273,7 +273,7 @@ export const updateBookingStatus = async (req, res) => {
         }
 
         booking.status = status;
-        booking.employee = employee
+        booking.employee = employee || 1
 
         await booking.save({ transaction });
         let transporter = nodemailer.createTransport({
