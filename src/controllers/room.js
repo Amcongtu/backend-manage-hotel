@@ -36,6 +36,7 @@ export const createRoom = async (req, res) => {
         status
     } = req.body;
 
+   
     const transaction = await db.sequelize.transaction();
 
     try {
@@ -54,7 +55,6 @@ export const createRoom = async (req, res) => {
         if (existingRoom) {
             return res.status(400).json(responseHelper(400, "Phòng này đã tồn tại", false, []));
         }
-
         const room = await db.Room.create({
             code,
             name,
@@ -70,8 +70,8 @@ export const createRoom = async (req, res) => {
         if (Array.isArray(image)) {
             for (let i = 0; i < image.length; i++) {
                 await db.ImageRoom.create({
-                    value: image[i].value,
-                    valueId: image[i].valueId,
+                    value: image[i].value || '',
+                    valueId: image[i].valueId || '',
                     room: room.id
                 }, { transaction });
             }

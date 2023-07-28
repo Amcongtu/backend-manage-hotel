@@ -39,8 +39,8 @@ export const addRoomType = async (req, res) => {
         if (Array.isArray(image)) {
             for (let i = 0; i < image.length; i++) {
                 await db.ImageRoomType.create({
-                    value: image[i].image,
-                    valueId: image[i].imageId,
+                    value: image[i].image || "",
+                    valueId: image[i].imageId || "",
                     roomType: roomType.id
                 }, { transaction });
             }
