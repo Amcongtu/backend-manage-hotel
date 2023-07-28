@@ -35,8 +35,6 @@ export const createCheckOut = async (req, res) => {
                 {
                     booking,
                     service: service.id,
-                    createdAt: checkOutDate, // Sử dụng checkOutDate thay vì checkInDate
-                    updatedAt: checkOutDate // Sử dụng checkOutDate thay vì checkInDate
                 },
                 { transaction }
             );
