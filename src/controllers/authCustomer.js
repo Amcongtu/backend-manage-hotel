@@ -48,7 +48,16 @@ export const registerCustomer = async (req, res, next) => {
     [
       {
         token: token,
-      
+        id: response[0].id,
+        username: response[0].username,
+        name: response[0].name,
+        email: response[0].email,
+        imageId: response[0].imageId,
+        phone: response[0].phone,
+        address: response[0].address,
+        gender: response[0].gender,
+        image: response[0].image,
+        dateOfBirth: response[0].dateOfBirth,
       }
     ]))
   }
@@ -94,16 +103,6 @@ export const loginCustomer = async (req, res, next) => {
       .status(200)
       .json(responseHelper(200, "Đăng nhập thành công", true, {
         token: token,
-        id: Customer.id,
-        username: Customer.username,
-        name: Customer.name,
-        email: Customer.email,
-        imageId: Customer.imageId,
-        phone: Customer.phone,
-        address: Customer.address,
-        gender: Customer.gender,
-        image: Customer.image,
-        dateOfBirth: Customer.dateOfBirth,
       }));
   } catch (error) {
     return res
