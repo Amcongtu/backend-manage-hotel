@@ -2,10 +2,10 @@ import db from "../models/index.js"
 import { responseHelper } from "../helpers/response.js"
 
 export const createCheckOut = async (req, res) => {
-    const { booking, date, description, status, employee } = req.body;
+    const { booking, date, description, status, employee, services } = req.body;
 
     const currentDate = new Date();
-    const checkOutDate = date || currentDate; // Sử dụng date từ request body hoặc lấy ngày giờ hiện tại dưới định dạng ISO
+    const checkOutDate = date || currentDate;
 
     const transaction = await db.sequelize.transaction();
 
@@ -21,12 +21,38 @@ export const createCheckOut = async (req, res) => {
             return res.status(400).json(responseHelper(400, "Nhân viên không tồn tại", false, []));
         }
 
+        // Tính tổng tiền dịch vụ sau khi thêm vào
+        let serviceTotal = 0;
+        for (const service of services) {
+            const existingService = await db.Service.findOne({ where: { id: service.id } });
+            if (!existingService) {
+                await transaction.rollback();
+                return res.status(400).json(responseHelper(400, `Dịch vụ với ID ${service.id} không tồn tại`, false, []));
+            }
+
+            // Thêm dịch vụ vào ServiceOfBooking
+            await db.ServiceOfBooking.create(
+                {
+                    booking,
+                    service: service.id,
+                },
+                { transaction }
+            );
+
+            // Cộng tiền dịch vụ vào tổng tiền
+            serviceTotal += Number(existingService.amount);
+        }
+
+        // Cập nhật trường total của bảng Booking
+        existingBooking.total = Number(existingBooking.total) + Number(serviceTotal);
+        await existingBooking.save({ transaction });
+
         const checkOut = await db.CheckOut.create({
             booking,
             date: checkOutDate,
-            description: description || "",
             status: status || "checkedOut",
-            employee
+            description: description || "",
+            employee,
         }, { transaction });
 
         // Cập nhật trạng thái của booking thành "checkedOut"
